@@ -1926,7 +1926,7 @@ get_rq:
 		 * @request_count may become stale because of schedule
 		 * out, so check plug list again.
 		 */
-        printk("plugged\n");
+        //printk("plugged\n");
 		if (!request_count || list_empty(&plug->list))
 			trace_block_plug(q);
 		else {
