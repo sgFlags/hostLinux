@@ -162,17 +162,17 @@ static inline struct request *__elv_next_request(struct request_queue *q)
 	WARN_ON_ONCE(q->mq_ops);
 
 	while (1) {
-        list_for_each_entry_safe(tag_rq, temp_rq, &q->queue_head, queuelist) {
-            num++;
-        }
+        //list_for_each_entry_safe(tag_rq, temp_rq, &q->queue_head, queuelist) {
+          //  num++;
+        //}
 
-        printk("in __elv_next_request, num of request is %d\n", num);
+        //printk("in __elv_next_request, num of request is %d\n", num);
 
 		if (!list_empty(&q->queue_head)) {
 			rq = list_entry_rq(q->queue_head.next);
 			return rq;
 		}
-        printk("pass empty condition\n");
+        //printk("pass empty condition\n");
 		/*
 		 * Flush request is running and flush request isn't queueable
 		 * in the drive, we can hold the queue till flush request is
