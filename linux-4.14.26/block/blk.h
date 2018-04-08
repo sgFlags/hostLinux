@@ -172,7 +172,7 @@ static inline struct request *__elv_next_request(struct request_queue *q)
 			rq = list_entry_rq(q->queue_head.next);
 			return rq;
 		}
-
+        printk("pass empty condition\n");
 		/*
 		 * Flush request is running and flush request isn't queueable
 		 * in the drive, we can hold the queue till flush request is
