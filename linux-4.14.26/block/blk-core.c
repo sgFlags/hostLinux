@@ -1637,7 +1637,7 @@ bool bio_attempt_back_merge(struct request_queue *q, struct request *req,
     /* e6998 */
     req->tag_prio = tag_prio_best(req->tag_prio, bio->tag_prio);
 
-    printk("in back merge, request->tag_prio is %d\n", req->tag_prio);
+    //printk("in back merge, request->tag_prio is %d\n", req->tag_prio);
 	blk_account_io_start(req, false);
 	return true;
 }
@@ -1665,7 +1665,7 @@ bool bio_attempt_front_merge(struct request_queue *q, struct request *req,
     /* e6998 */
     req->tag_prio = tag_prio_best(req->tag_prio, bio->tag_prio);
     
-    printk("in front merge, request->tag_prio is %d\n", req->tag_prio);
+    //printk("in front merge, request->tag_prio is %d\n", req->tag_prio);
 	blk_account_io_start(req, false);
 	return true;
 }

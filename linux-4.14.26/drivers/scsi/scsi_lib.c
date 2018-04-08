@@ -1866,7 +1866,7 @@ static void scsi_request_fn(struct request_queue *q)
         else
             cmd->tag_prio = req->tag_prio;
 
-        printk("in scsi_request_fn, tag_prio is %d\n", cmd->tag_prio);
+        //printk("in scsi_request_fn, tag_prio is %d\n", cmd->tag_prio);
 
         rtn = scsi_dispatch_cmd(cmd);
 		if (rtn) {
