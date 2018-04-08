@@ -166,7 +166,7 @@ static inline struct request *__elv_next_request(struct request_queue *q)
             num++;
         }
 
-        printk("in __elv_next_request, num of request is %d\n");
+        printk("in __elv_next_request, num of request is %d\n", num);
 
 		if (!list_empty(&q->queue_head)) {
 			rq = list_entry_rq(q->queue_head.next);
