@@ -1190,6 +1190,7 @@ SYSCALL_DEFINE5(preadv, unsigned long, fd, const struct iovec __user *, vec,
 {
 	loff_t pos = pos_from_hilo(pos_h, pos_l);
 
+    printk("in preadv\n");
 	return do_preadv(fd, vec, vlen, pos, 0);
 }
 
@@ -1296,6 +1297,7 @@ COMPAT_SYSCALL_DEFINE4(preadv64, unsigned long, fd,
 		const struct compat_iovec __user *,vec,
 		unsigned long, vlen, loff_t, pos)
 {
+    printk("in COMPAT_SYSCALL_DEFINE4(preadv64\n");
 	return do_compat_preadv64(fd, vec, vlen, pos, 0);
 }
 #endif
@@ -1306,6 +1308,7 @@ COMPAT_SYSCALL_DEFINE5(preadv, compat_ulong_t, fd,
 {
 	loff_t pos = ((loff_t)pos_high << 32) | pos_low;
 
+    printk("in COMPAT_SYSCALL_DEFINE5(preadv\n");
 	return do_compat_preadv64(fd, vec, vlen, pos, 0);
 }
 
