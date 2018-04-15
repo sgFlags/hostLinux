@@ -683,7 +683,7 @@ SYSCALL_DEFINE4(pread64, unsigned int, fd, char __user *, buf,
 		return -EINVAL;
 
 	f = fdget(fd);
-    printk("using pread64\n");
+    //printk("using pread64\n");
 	if (f.file) {
 		ret = -ESPIPE;
 		if (f.file->f_mode & FMODE_PREAD)
