@@ -705,10 +705,14 @@ SYSCALL_DEFINE5(tag_pread64, unsigned int, fd, char __user *, buf, size_t, count
 
 	f = fdget(fd);
     printk("using my tag_pread64\n");
+
+    //if (tag_prio > 7 || tag_prio < 1)
+       // tag_prio = 4;
+
 	if (f.file) {
 		ret = -ESPIPE;
 		if (f.file->f_mode & FMODE_PREAD)
-			ret = vfs_read(f.file, buf, count, &pos);
+			ret = tag_vfs_read(f.file, buf, count, &pos, tag_prio);
 		fdput(f);
 	}
 
@@ -1022,6 +1026,7 @@ out:
 	return ret;
 }
 
+
 ssize_t vfs_iter_read(struct file *file, struct iov_iter *iter, loff_t *ppos,
 		rwf_t flags)
 {
@@ -1076,6 +1081,26 @@ ssize_t vfs_readv(struct file *file, const struct iovec __user *vec,
 	ssize_t ret;
 
 	ret = import_iovec(READ, vec, vlen, ARRAY_SIZE(iovstack), &iov, &iter);
+	if (ret >= 0) {
+		ret = do_iter_read(file, &iter, pos, flags);
+		kfree(iov);
+	}
+
+	return ret;
+}
+
+/* e6998 */
+ssize_t tag_vfs_readv(struct file *file, const struct iovec __user *vec,
+		  unsigned long vlen, loff_t *pos, rwf_t flags, uint8_t tag_prio)
+{
+	struct iovec iovstack[UIO_FASTIOV];
+	struct iovec *iov = iovstack;
+	struct iov_iter iter;
+	ssize_t ret;
+
+	ret = import_iovec(READ, vec, vlen, ARRAY_SIZE(iovstack), &iov, &iter);
+
+    iter.prio = tag_prio;
 	if (ret >= 0) {
 		ret = do_iter_read(file, &iter, pos, flags);
 		kfree(iov);
@@ -1171,6 +1196,30 @@ static ssize_t do_preadv(unsigned long fd, const struct iovec __user *vec,
 	return ret;
 }
 
+/* e6998 */
+static ssize_t tag_do_preadv(unsigned long fd, const struct iovec __user *vec,
+			 unsigned long vlen, loff_t pos, rwf_t flags, uint8_t tag_prio)
+{
+	struct fd f;
+	ssize_t ret = -EBADF;
+
+	if (pos < 0)
+		return -EINVAL;
+
+	f = fdget(fd);
+	if (f.file) {
+		ret = -ESPIPE;
+		if (f.file->f_mode & FMODE_PREAD)
+			ret = tag_vfs_readv(f.file, vec, vlen, &pos, flags, tag_prio);
+		fdput(f);
+	}
+
+	if (ret > 0)
+		add_rchar(current, ret);
+	inc_syscr(current);
+	return ret;
+}
+
 static ssize_t do_pwritev(unsigned long fd, const struct iovec __user *vec,
 			  unsigned long vlen, loff_t pos, rwf_t flags)
 {
@@ -1220,7 +1269,7 @@ SYSCALL_DEFINE5(tag_preadv64, unsigned long, fd, const struct iovec __user *, ve
 {
 
     printk("using my tag_preadv64\n");
-	return do_preadv(fd, vec, vlen, pos, 0);
+	return tag_do_preadv(fd, vec, vlen, pos, 0, tag_prio);
 }
 
 
