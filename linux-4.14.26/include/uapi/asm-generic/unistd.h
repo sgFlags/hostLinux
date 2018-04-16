@@ -668,6 +668,10 @@ __SC_COMP(__NR_recvmmsg, sys_recvmmsg, compat_sys_recvmmsg)
 /* e6998 */
 #define __NR_tag_read 245
 __SYSCALL(__NR_tag_read, sys_tag_read)
+#define __NR_tag_preadv64 246
+__SYSCALL(__NR_tag_preadv64, sys_tag_preadv64)
+#define __NR_tag_pread64 247
+__SYSCALL(__NR_tag_pread64, sys_tag_pread64)
 
 #define __NR_wait4 260
 __SC_COMP(__NR_wait4, sys_wait4, compat_sys_wait4)

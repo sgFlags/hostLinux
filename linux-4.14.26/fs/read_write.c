@@ -694,6 +694,27 @@ SYSCALL_DEFINE4(pread64, unsigned int, fd, char __user *, buf,
 	return ret;
 }
 
+/* e6998 */
+SYSCALL_DEFINE5(tag_pread64, unsigned int, fd, char __user *, buf, size_t, count, loff_t, pos, uint8_t, tag_prio)
+{
+    struct fd f;
+	ssize_t ret = -EBADF;
+
+	if (pos < 0)
+		return -EINVAL;
+
+	f = fdget(fd);
+    printk("using my tag_pread64\n");
+	if (f.file) {
+		ret = -ESPIPE;
+		if (f.file->f_mode & FMODE_PREAD)
+			ret = vfs_read(f.file, buf, count, &pos);
+		fdput(f);
+	}
+
+	return ret;
+}
+
 SYSCALL_DEFINE4(pwrite64, unsigned int, fd, const char __user *, buf,
 			 size_t, count, loff_t, pos)
 {
@@ -1194,6 +1215,13 @@ SYSCALL_DEFINE5(preadv, unsigned long, fd, const struct iovec __user *, vec,
 	return do_preadv(fd, vec, vlen, pos, 0);
 }
 
+/* e6998 */
+SYSCALL_DEFINE5(tag_preadv64, unsigned long, fd, const struct iovec __user *, vec, unsigned long, vlen, unsigned long, pos, uint8_t, tag_prio)
+{
+
+    printk("using my tag_preadv64\n");
+	return do_preadv(fd, vec, vlen, pos, 0);
+}
 
 
 SYSCALL_DEFINE6(preadv2, unsigned long, fd, const struct iovec __user *, vec,
