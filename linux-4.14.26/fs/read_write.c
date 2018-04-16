@@ -1190,7 +1190,7 @@ SYSCALL_DEFINE5(preadv, unsigned long, fd, const struct iovec __user *, vec,
 {
 	loff_t pos = pos_from_hilo(pos_h, pos_l);
 
-    printk("in preadv\n");
+    printk("in preadv, fd is %d, vec is %p, vlen is %lu, pos_l is %lu, pos_h is %lu\n", fd, vec, vlen, pos_l, pos_h);
 	return do_preadv(fd, vec, vlen, pos, 0);
 }
 
