@@ -1615,6 +1615,7 @@ static blk_qc_t blk_mq_make_request(struct request_queue *q, struct bio *bio)
 
 	blk_queue_split(q, &bio);
 
+    printk("in blk_mq_make_request\n");
 	if (!bio_integrity_prep(bio))
 		return BLK_QC_T_NONE;
 

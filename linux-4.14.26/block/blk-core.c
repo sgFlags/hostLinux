@@ -1836,6 +1836,8 @@ static blk_qc_t blk_queue_bio(struct request_queue *q, struct bio *bio)
 
 	blk_queue_split(q, &bio);
 
+    printk("in blk_queue_bio\n");
+
 	if (!bio_integrity_prep(bio))
 		return BLK_QC_T_NONE;
 
@@ -1845,6 +1847,7 @@ static blk_qc_t blk_queue_bio(struct request_queue *q, struct bio *bio)
 		goto get_rq;
 	}
 
+    printk("in blk_request_bio\n");
 	/*
 	 * Check if we can merge with the plugged list before grabbing
 	 * any locks.
