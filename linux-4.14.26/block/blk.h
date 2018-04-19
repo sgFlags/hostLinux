@@ -170,7 +170,8 @@ static inline struct request *__elv_next_request(struct request_queue *q)
 
 		if (!list_empty(&q->queue_head)) {
 			rq = list_entry_rq(q->queue_head.next);
-			return rq;
+			printk("directly return request\n");
+            return rq;
 		}
         //printk("pass empty condition\n");
 		/*
