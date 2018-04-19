@@ -60,6 +60,13 @@ noop_latter_request(struct request_queue *q, struct request *rq)
 	return list_next_entry(rq, queuelist);
 }
 
+/* e6998 */
+static int noop_set_request(struct request_queue *q, struct request *rq, struct bio *bio, gfp_t gfp_mask)
+{
+    printk("in noop_set_request!\n");
+    return 0;
+}
+
 static int noop_init_queue(struct request_queue *q, struct elevator_type *e)
 {
 	struct noop_data *nd;
@@ -99,6 +106,7 @@ static struct elevator_type elevator_noop = {
 		.elevator_add_req_fn		= noop_add_request,
 		.elevator_former_req_fn		= noop_former_request,
 		.elevator_latter_req_fn		= noop_latter_request,
+        .elevator_set_req_fn    = noop_set_request,
 		.elevator_init_fn		= noop_init_queue,
 		.elevator_exit_fn		= noop_exit_queue,
 	},

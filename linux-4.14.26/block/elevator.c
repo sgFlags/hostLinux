@@ -411,6 +411,45 @@ void elv_dispatch_sort(struct request_queue *q, struct request *rq)
 }
 EXPORT_SYMBOL(elv_dispatch_sort);
 
+/* e6998 */
+void tag_elv_dispatch_sort(struct request_queue *q, struct request *rq)
+{
+	sector_t boundary;
+	struct list_head *entry;
+
+	if (q->last_merge == rq)
+		q->last_merge = NULL;
+
+	elv_rqhash_del(q, rq);
+
+	q->nr_sorted--;
+
+	boundary = q->end_sector;
+	list_for_each_prev(entry, &q->queue_head) {
+		struct request *pos = list_entry_rq(entry);
+
+		if (req_op(rq) != req_op(pos))
+			break;
+		if (rq_data_dir(rq) != rq_data_dir(pos))
+			break;
+		if (pos->rq_flags & (RQF_STARTED | RQF_SOFTBARRIER))
+			break;
+		if (blk_rq_pos(rq) >= boundary) {
+			if (blk_rq_pos(pos) < boundary)
+				continue;
+		} else {
+			if (blk_rq_pos(pos) >= boundary)
+				break;
+		}
+		if (blk_rq_pos(rq) >= blk_rq_pos(pos))
+			break;
+	}
+
+	list_add(&rq->queuelist, entry);
+}
+EXPORT_SYMBOL(tag_elv_dispatch_sort);
+
+
 /*
  * Insert rq into dispatch queue of q.  Queue lock must be held on
  * entry.  rq is added to the back of the dispatch queue. To be used by

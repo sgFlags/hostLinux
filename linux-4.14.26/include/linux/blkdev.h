@@ -199,6 +199,12 @@ struct request {
 			struct list_head	list;
 			rq_end_io_fn		*saved_end_io;
 		} flush;
+
+        /* e6998 */
+        struct {
+            pid_t   vm_pid;
+            pid_t   proc_pid;
+        } tagio;
 	};
 
 	struct gendisk *rq_disk;

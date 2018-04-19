@@ -181,6 +181,8 @@ struct elevator_queue
 /*
  * block elevator interface
  */
+/* e6998 */
+extern void tag_elv_dispatch_sort(struct request_queue *, struct request *);
 extern void elv_dispatch_sort(struct request_queue *, struct request *);
 extern void elv_dispatch_add_tail(struct request_queue *, struct request *);
 extern void elv_add_request(struct request_queue *, struct request *, int);

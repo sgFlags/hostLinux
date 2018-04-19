@@ -155,9 +155,9 @@ static inline struct request *__elv_next_request(struct request_queue *q)
 	struct blk_flush_queue *fq = blk_get_flush_queue(q, NULL);
 
     /* e6998 */
-    struct request *tag_rq;
-    struct request *temp_rq;
-    int num = 0;
+    //struct request *tag_rq;
+    //struct request *temp_rq;
+    //int num = 0;
 
 	WARN_ON_ONCE(q->mq_ops);
 
