@@ -179,7 +179,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     if (!bio || bio->tag_flags != FLAG_TAG)
         return 0;
 
-    spin_lock(q->queue_lock);
+    spin_lock_irq(q->queue_lock);
 
     rq->tag_prio = bio->tag_prio;
     rq->tagio.vm_pid = bio->vm_pid;
