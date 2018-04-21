@@ -54,7 +54,7 @@ static int noop_dispatch(struct request_queue *q, int force)
 
     /* find the vm with smallest vm_disktime */
     
-    vmd = list_first_entry_or_null(&nd->vms, struct vm_data, vm_list);
+    /*vmd = list_first_entry_or_null(&nd->vms, struct vm_data, vm_list);
     
     if (!vmd) {
         goto my_fail;
@@ -65,10 +65,10 @@ static int noop_dispatch(struct request_queue *q, int force)
             vmd = temp_vmd;
             min_disktime = vmd->vm_disktime;
          }
-    }
+    }*/
 
     /* find the process with smallest proc_disktime */
-    node = rb_first(&vmd->procs_vt_root);
+    /*node = rb_first(&vmd->procs_vt_root);
     procd = rb_entry(node, struct proc_data, proc_vt_node);
     printk(KERN_ERR "proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
     if (list_empty(&procd->request_list)) {
@@ -102,7 +102,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     }
 
     list_del_init(&rq->queuelist);
-	list_add_tail(&rq->queuelist, &nd->queue);
+	list_add_tail(&rq->queuelist, &nd->queue);*/
 
 my_fail:
 	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
