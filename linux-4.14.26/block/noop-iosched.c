@@ -257,6 +257,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
         INIT_LIST_HEAD(&procd->request_list);
         rb_link_node(&procd->proc_pid_node, parent, link);
         rb_insert_color(&procd->proc_pid_node, &vmd->procs_pid_root);
+        printk("after rb_insert_color\n");
         insert_proc_into_vt_tree(procd, vmd);
     } else {
         kfree(backup_procd);
