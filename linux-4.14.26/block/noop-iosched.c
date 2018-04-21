@@ -76,7 +76,12 @@ static int noop_dispatch(struct request_queue *q, int force)
         goto my_fail;
     }
     rq = list_last_entry(&procd->request_list, struct request, tag_list);
-    
+   
+    if (rq == NULL) {
+        printk("rq is null??\n");
+        goto my_fail;
+    }
+
     stride = GLOBAL_S / rq->tag_prio;
    
     procd->proc_disktime += stride;
