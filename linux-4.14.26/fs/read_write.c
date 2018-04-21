@@ -705,12 +705,17 @@ SYSCALL_DEFINE4(pread64, unsigned int, fd, char __user *, buf,
 }
 
 /* e6998 */
-SYSCALL_DEFINE5(tag_pread64, unsigned int, fd, char __user *, buf, size_t, count, loff_t, pos, uint8_t, tag_prio)
+SYSCALL_DEFINE5(tag_pread64, unsigned int, fd, char __user *, buf, size_t, count, loff_t, pos, struct tag_data __user *, td)
 {
     struct fd f;
 	ssize_t ret = -EBADF;
 
-    struct tag_data *ktd;
+    struct tag_data *ktd = kmalloc(sizeof(struct tag_data), GFP_KERNEL);
+
+    if (copy_from_user(ktd, td, sizeof(struct tag_data)))
+        return -EFAULT;
+
+    ktd->tag_flags = FLAG_TAG;
 
 	if (pos < 0)
 		return -EINVAL;
@@ -728,6 +733,7 @@ SYSCALL_DEFINE5(tag_pread64, unsigned int, fd, char __user *, buf, size_t, count
 			//ret = tag_vfs_read(f.file, buf, count, &pos, tag_prio);
 		fdput(f);
 	}
+    kfree(ktd);
 
 	return ret;
 }
@@ -1104,7 +1110,7 @@ ssize_t vfs_readv(struct file *file, const struct iovec __user *vec,
 
 /* e6998 */
 ssize_t tag_vfs_readv(struct file *file, const struct iovec __user *vec,
-		  unsigned long vlen, loff_t *pos, rwf_t flags, uint8_t tag_prio)
+		  unsigned long vlen, loff_t *pos, rwf_t flags, struct tag_data *td)
 {
 	struct iovec iovstack[UIO_FASTIOV];
 	struct iovec *iov = iovstack;
@@ -1113,7 +1119,7 @@ ssize_t tag_vfs_readv(struct file *file, const struct iovec __user *vec,
 
 	ret = import_iovec(READ, vec, vlen, ARRAY_SIZE(iovstack), &iov, &iter);
 
-    iter.prio = tag_prio;
+    iter.td = *td;
 	if (ret >= 0) {
 		ret = do_iter_read(file, &iter, pos, flags);
 		kfree(iov);
@@ -1211,7 +1217,7 @@ static ssize_t do_preadv(unsigned long fd, const struct iovec __user *vec,
 
 /* e6998 */
 static ssize_t tag_do_preadv(unsigned long fd, const struct iovec __user *vec,
-			 unsigned long vlen, loff_t pos, rwf_t flags, uint8_t tag_prio)
+			 unsigned long vlen, loff_t pos, rwf_t flags, struct tag_data *td)
 {
 	struct fd f;
 	ssize_t ret = -EBADF;
@@ -1223,7 +1229,7 @@ static ssize_t tag_do_preadv(unsigned long fd, const struct iovec __user *vec,
 	if (f.file) {
 		ret = -ESPIPE;
 		if (f.file->f_mode & FMODE_PREAD)
-			ret = tag_vfs_readv(f.file, vec, vlen, &pos, flags, tag_prio);
+			ret = tag_vfs_readv(f.file, vec, vlen, &pos, flags, td);
 		fdput(f);
 	}
 
@@ -1278,11 +1284,21 @@ SYSCALL_DEFINE5(preadv, unsigned long, fd, const struct iovec __user *, vec,
 }
 
 /* e6998 */
-SYSCALL_DEFINE5(tag_preadv64, unsigned long, fd, const struct iovec __user *, vec, unsigned long, vlen, unsigned long, pos, uint8_t, tag_prio)
+SYSCALL_DEFINE5(tag_preadv64, unsigned long, fd, const struct iovec __user *, vec, unsigned long, vlen, unsigned long, pos, struct tag_data __user *, td)
 {
+    ssize_t ret;
 
     printk("using my tag_preadv64\n");
-	return tag_do_preadv(fd, vec, vlen, pos, 0, tag_prio);
+    struct tag_data *ktd = kmalloc(sizeof(struct tag_data), GFP_KERNEL);
+
+    if (copy_from_user(ktd, td, sizeof(struct tag_data)))
+        return -EFAULT;
+
+    ktd->tag_flags = FLAG_TAG;
+
+	ret = tag_do_preadv(fd, vec, vlen, pos, 0, ktd);
+    kfree(ktd);
+    return ret;
 }
 
 

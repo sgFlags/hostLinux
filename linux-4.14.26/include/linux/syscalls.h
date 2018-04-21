@@ -603,8 +603,8 @@ asmlinkage long sys_readahead(int fd, loff_t offset, size_t count);
 
 /* e6998 */
 asmlinkage long sys_tag_read(unsigned int fd, char __user *buf, size_t count, struct tag_data __user *td);
-asmlinkage long sys_tag_preadv64(unsigned long fd, const struct iovec __user *vec, unsigned long vlen, unsigned long pos, uint8_t tag_prio);
-asmlinkage long sys_tag_pread64(unsigned int fd, char __user *buf, size_t count, loff_t pos, uint8_t tag_prio);
+asmlinkage long sys_tag_preadv64(unsigned long fd, const struct iovec __user *vec, unsigned long vlen, unsigned long pos, struct tag_data __user *td);
+asmlinkage long sys_tag_pread64(unsigned int fd, char __user *buf, size_t count, loff_t pos, struct tag_data __user *td);
 
 
 asmlinkage long sys_readv(unsigned long fd,
