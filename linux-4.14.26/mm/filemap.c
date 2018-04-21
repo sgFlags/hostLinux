@@ -1952,6 +1952,8 @@ static ssize_t generic_file_buffered_read(struct kiocb *iocb,
 	int error = 0;
 
     /* e6998 */
+    if (iter->td.tag_flags == FLAG_TAG)
+        printk("get to generic_file_buffered_read!\n");
     ra->td = iter->td;
 
     //printk("in generic_file_buffered_read!\n");
