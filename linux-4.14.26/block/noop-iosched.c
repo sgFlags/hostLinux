@@ -115,7 +115,7 @@ static int noop_dispatch(struct request_queue *q, int force)
 
 my_fail:
 	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
-	if (rq && rq->) {
+	if (rq) {
 		list_del_init(&rq->queuelist);
 		elv_dispatch_sort(q, rq);
 		return 1;
