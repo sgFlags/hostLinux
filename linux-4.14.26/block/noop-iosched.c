@@ -90,6 +90,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     printk(KERN_ERR"before delete tag_list\n");
 
     list_del_init(&rq->tag_list);
+    printk(KERN_ERR"after delete tag_list\n");
     
     /*if (!list_empty(&procd->list)) {
         printk(KERN_ERR"same vt has more than one procs!\n");
