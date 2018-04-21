@@ -46,6 +46,8 @@ static int noop_dispatch(struct request_queue *q, int force)
 {
 	struct noop_data *nd = q->elevator->elevator_data;
 	struct request *rq;
+    struct request *req = NULL;
+    struct request *temp_rq = NULL;
     struct vm_data *vmd, *temp_vmd;
     struct proc_data *procd, *next_procd;
     struct rb_node *node;
@@ -90,7 +92,8 @@ static int noop_dispatch(struct request_queue *q, int force)
     
     //printk(KERN_ERR"before delete tag_list\n");
 
-    //list_del_init(&rq->queuelist);
+    list_del_init(&rq->tag_list);
+    rq->tagio.tag_flags = tag_ok;
     //printk(KERN_ERR"after delete tag_list\n");
     
     if (!list_empty(&procd->list)) {
@@ -115,10 +118,16 @@ static int noop_dispatch(struct request_queue *q, int force)
 	//list_add_tail(&rq->queuelist, &nd->queue);
 
 my_fail:
-	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
-	if (rq) {
-		list_del_init(&rq->queuelist);
-		elv_dispatch_sort(q, rq);
+	//rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
+    list_for_each_entry(temp_rq, &nd->queue, queuelist) {
+        if (temp_rq->tagio.tag_data != FLAG_TAG) {
+            req = temp_rq;
+            break;
+        }
+    }
+	if (req) {
+		list_del_init(&req->queuelist);
+		elv_dispatch_sort(q, req);
 		return 1;
 	}
 	return 0;
