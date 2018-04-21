@@ -68,14 +68,14 @@ static int noop_dispatch(struct request_queue *q, int force)
     }
 
     /* find the process with smallest proc_disktime */
-    node = rb_first(&vmd->procs_vt_root);
+    /*node = rb_first(&vmd->procs_vt_root);
     procd = rb_entry(node, struct proc_data, proc_vt_node);
     printk(KERN_ERR "proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
     if (list_empty(&procd->request_list)) {
         printk(KERN_ERR "strange!!\n");
         goto my_fail;
     }
-    rq = list_last_entry(&procd->request_list, struct request, queuelist);
+    rq = list_last_entry(&procd->request_list, struct request, tag_list);
    
     if (rq == NULL) {
         printk(KERN_ERR"rq is null??\n");
@@ -89,8 +89,8 @@ static int noop_dispatch(struct request_queue *q, int force)
     
     printk(KERN_ERR"before delete tag_list\n");
 
-    list_del_init(&rq->queuelist);
-    printk(KERN_ERR"after delete tag_list\n");
+    //list_del_init(&rq->queuelist);
+    printk(KERN_ERR"after delete tag_list\n");*/
     
     /*if (!list_empty(&procd->list)) {
         printk(KERN_ERR"same vt has more than one procs!\n");
@@ -110,8 +110,8 @@ static int noop_dispatch(struct request_queue *q, int force)
         printk(KERN_ERR"proc %u still has requests, insert this proc back\n", procd->proc_pid);
     }
 
-    list_del_init(&rq->queuelist);*/
-	list_add_tail(&rq->queuelist, &nd->queue);
+    list_del_init(&rq->queuelist);
+	list_add_tail(&rq->queuelist, &nd->queue);*/
 
 my_fail:
 	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
@@ -125,8 +125,8 @@ my_fail:
 static void noop_add_request(struct request_queue *q, struct request *rq)
 {
 	struct noop_data *nd = q->elevator->elevator_data;
-    if (rq->tagio.tag_flags == FLAG_TAG)
-        return;
+    //if (rq->tagio.tag_flags == FLAG_TAG)
+      //  return;
     list_add_tail(&rq->queuelist, &nd->queue);
 }
 
@@ -267,8 +267,8 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
 
     //spin_lock_irq(&procd->proc_lock);
     list_del_init(&rq->queuelist);
-    list_add(&rq->queuelist, &procd->request_list);
-    //list_add(&rq->tag_list, &procd->request_list);
+    //list_add(&rq->queuelist, &procd->request_list);
+    list_add(&rq->tag_list, &procd->request_list);
     //spin_unlock_irq(&procd->proc_lock);
     spin_unlock_irq(q->queue_lock);
     return 0;
