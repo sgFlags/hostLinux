@@ -69,7 +69,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
     if (rq->tagio.tag_flags != FLAG_TAG)
         goto my_fail;
     
-    spin_lock_irq(q->queue_lock);
+    //spin_lock_irq(q->queue_lock);
     printk(KERN_ERR "request enter noop add, about to lock nd->vms_lock\n");
 
     /* find the vm with smallest vm_disktime */
@@ -138,7 +138,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
         //spin_unlock_irq(&procd->proc_lock);
     }
 
-    spin_unlock_irq(q->queue_lock);
+    //spin_unlock_irq(q->queue_lock);
 
 my_fail:
 	list_add_tail(&rq->queuelist, &nd->queue);
@@ -179,7 +179,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     if (!bio || bio->tag_flags != FLAG_TAG)
         return 0;
 
-    spin_lock_irq(q->queue_lock);
+    spin_lock(q->queue_lock);
 
     rq->tag_prio = bio->tag_prio;
     rq->tagio.vm_pid = bio->vm_pid;
