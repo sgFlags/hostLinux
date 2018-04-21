@@ -162,7 +162,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     bool find = false;
     u64 min_disktime;
 
-    if (!bio || bio->tag_flags & FLAG_TAG == 0)
+    if (!bio || bio->tag_flags != FLAG_TAG)
         return 0;
 
     backup_vmd = kmalloc(sizeof(struct vm_data), gfp_mask);
