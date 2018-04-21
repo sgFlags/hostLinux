@@ -10,7 +10,30 @@
 #include <linux/idr.h>
 #include <linux/tagio.h>
 
+void insert_proc_into_vt_tree(struct proc_data *procd, struct vm_data *vmd)
+{
+    struct rb_node **link, *parent;
+    struct rb_root *root = &vmd->procs_vt_root;
+    struct proc_data *temp_procd;
+    u64 value = procd->proc_disktime;
 
+    link = &root->rb_node;
+    while (*link) {
+        parent = *link;
+        temp_procd = rb_entry(parent, struct proc_data, proc_vt_node);
+
+        if (value < temp_procd->proc_disktime)
+            link = &(*link)->rb_left;
+        if (value > temp_procd->proc_disktime)
+            link = &(*link)->rb_right;
+        else {
+            list_add_tail(&procd->list, &temp_procd->list);
+            return;
+        }
+    }
+    rb_link_node(&procd->proc_vt_node, parent, link);
+    rb_insert_color(&procd->proc_vt_node, root);
+}
 /* must be called with vms_pid_lock held */
 /*struct vm_data *search_vm_with_pid(struct rb_root *root, pid_t pid)
 {
