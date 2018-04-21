@@ -521,7 +521,13 @@ struct bio *bio_alloc_bioset(gfp_t gfp_mask, unsigned int nr_iovecs,
 	bio->bi_pool = bs;
 	bio->bi_max_vecs = nr_iovecs;
 	bio->bi_io_vec = bvl;
-	return bio;
+
+    /* e6998 */
+    bio->tag_prio = 0;
+    bio->vm_pid = 0;
+    bio->proc_pid = 0;
+    bio->tag_flags = 0;
+    return bio;
 
 err_free:
 	mempool_free(p, bs->bio_pool);

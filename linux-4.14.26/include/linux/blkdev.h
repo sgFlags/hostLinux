@@ -28,6 +28,8 @@
 #include <linux/scatterlist.h>
 #include <linux/blkzoned.h>
 
+#include <linux/tagio.h>
+
 struct module;
 struct scsi_ioctl_command;
 
@@ -204,8 +206,13 @@ struct request {
         struct {
             pid_t   vm_pid;
             pid_t   proc_pid;
+            struct vm_data *vmdata;
+            struct proc_data *procdata;
+            uint32_t tag_flags;
         } tagio;
 	};
+    struct list_head tag_list;
+
 
 	struct gendisk *rq_disk;
 	struct hd_struct *part;

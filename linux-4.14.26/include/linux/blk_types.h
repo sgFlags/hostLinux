@@ -97,8 +97,11 @@ struct bio {
 	};
 
     /* e6998 */
-    uint8_t tag_prio;
-	
+    uint8_t     tag_prio;
+    pid_t       vm_pid;
+    pid_t       proc_pid;
+    uint32_t    tag_flags;
+
     unsigned short		bi_vcnt;	/* how many bio_vec's */
 
 	/*
