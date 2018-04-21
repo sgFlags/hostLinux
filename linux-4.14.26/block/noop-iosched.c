@@ -181,7 +181,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     bool find = false;
     u64 min_disktime;
 
-    if (bio->tag_flags != FLAG_TAG)
+    if (!bio || bio->tag_flags != FLAG_TAG)
         return 0;
 
     spin_lock_irq(q->queue_lock);
