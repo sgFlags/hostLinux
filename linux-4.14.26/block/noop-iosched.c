@@ -82,7 +82,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
     u64 min_disktime;
     u64 stride;
 
-    if (rq->cmd_flags != 0)
+    if (rq->tagio.tag_flags != FLAGS_TAG)
         goto my_fail;
 
     /* find the vm with smallest vm_disktime */

@@ -1,6 +1,9 @@
 #ifndef _TAGIO_H
 #define _TAGIO_H
 
+#include <linux/rbtree.c>
+#include <linux/spinlock.h>
+
 #define FLAG_TAG    0x10000
 
 #define GLOBAL_S    50
