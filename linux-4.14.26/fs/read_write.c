@@ -399,8 +399,6 @@ static ssize_t new_sync_read(struct file *filp, char __user *buf, size_t len, lo
 	kiocb.ki_pos = *ppos;
 	iov_iter_init(&iter, READ, &iov, 1, len);
     
-    /* e6998 */
-    iter.prio = -1;
 
 	ret = call_read_iter(filp, &kiocb, &iter);
 	BUG_ON(ret == -EIOCBQUEUED);
@@ -421,7 +419,7 @@ static ssize_t tag_new_sync_read(struct file *filp, char __user *buf, size_t len
 	iov_iter_init(&iter, READ, &iov, 1, len);
     iter.td.prio = td->prio;
     iter.td.vm_pid = td->vm_pid;
-    iter.td.proc_pid = td->proc_tid;
+    iter.td.proc_pid = td->proc_pid;
     iter.td.tag_flags = td->tag_flags;
 
 	ret = call_read_iter(filp, &kiocb, &iter);
@@ -644,7 +642,7 @@ SYSCALL_DEFINE3(read, unsigned int, fd, char __user *, buf, size_t, count)
 }
 
 /* e6998 */
-SYSCALL_DEFINE4(tag_read, unsigned int, fd, char __user *, buf, size_t, count, struct tag_data __user, *td)
+SYSCALL_DEFINE4(tag_read, unsigned int, fd, char __user *, buf, size_t, count, struct tag_data __user *, td)
 {
     struct fd f = fdget_pos(fd);
 	ssize_t ret = -EBADF;
