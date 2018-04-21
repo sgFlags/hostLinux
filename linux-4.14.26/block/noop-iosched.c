@@ -66,13 +66,13 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
     u64 min_disktime;
     u64 stride;
 
-    //if (rq->tagio.tag_flags != FLAG_TAG)
+    if (rq->tagio.tag_flags != FLAG_TAG)
         goto my_fail;
     
     printk(KERN_ERR "request enter noop add, prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tagio.tag_flags);
 
     /* find the vm with smallest vm_disktime */
-    spin_lock(&nd->vms_lock);
+    spin_lock_irq(&nd->vms_lock);
     vmd = list_first_entry_or_null(&nd->vms, struct vm_data, vm_list);
     
     if (!vmd) {
@@ -87,17 +87,17 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
             min_disktime = vmd->vm_disktime;
          }
     }
-    spin_unlock(&nd->vms_lock);
+    spin_unlock_irq(&nd->vms_lock);
 
     //node = vmd->procs_vt_root->rb_node;
     /* find the process with smallest proc_disktime */
     node = rb_first(&vmd->procs_vt_root);
     procd = rb_entry(node, struct proc_data, proc_vt_node);
     printk(KERN_ERR "proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
-    spin_lock(&procd->proc_lock);
+    spin_lock_irq(&procd->proc_lock);
     if (list_empty(&procd->request_list)) {
         printk(KERN_ERR "strange!!\n");
-        spin_unlock(&procd->proc_lock);
+        spin_unlock_irq(&procd->proc_lock);
         goto my_fail;
     }
     rq = list_last_entry(&procd->request_list, struct request, tag_list);
@@ -125,7 +125,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
         insert_proc_into_vt_tree(procd, vmd);
         printk(KERN_ERR"proc %u doesn't have any requests, but still insert this proc back\n", procd->proc_pid);
         spin_unlock(&vmd->procs_vt_lock);
-        spin_unlock(&procd->proc_lock);
+        spin_unlock_irq(&procd->proc_lock);
         //kfree(procd);
     } else {
         
@@ -133,7 +133,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
         insert_proc_into_vt_tree(procd, vmd);
         printk(KERN_ERR"proc %u still has requests, insert this proc back\n", procd->proc_pid);
         spin_unlock(&vmd->procs_vt_lock);
-        spin_unlock(&procd->proc_lock);
+        spin_unlock_irq(&procd->proc_lock);
     }
 
 
