@@ -1820,11 +1820,7 @@ void blk_init_request_from_bio(struct request *req, struct bio *bio)
 		req->ioprio = IOPRIO_PRIO_VALUE(IOPRIO_CLASS_NONE, 0);
 	req->write_hint = bio->bi_write_hint;
 	
-    /* e6998 */
-    req->tag_prio = bio->tag_prio;
-    req->tagio.vm_pid = bio->vm_pid;
-    req->tagio.proc_pid = bio->proc_pid;
-    req->tagio.tag_flags = bio->tag_flags;
+    
 
     blk_rq_bio_prep(req->q, req, bio);
 }
