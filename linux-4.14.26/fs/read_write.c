@@ -422,8 +422,8 @@ static ssize_t tag_new_sync_read(struct file *filp, char __user *buf, size_t len
     iter.td.proc_pid = td->proc_pid;
     iter.td.tag_flags = td->tag_flags;
 
-    if (td->tag_flags == FLAG_TAG)
-        printk("get tag_new_sync_read!\n");
+    //if (td->tag_flags == FLAG_TAG)
+      //  printk("get tag_new_sync_read!\n");
 
 	ret = call_read_iter(filp, &kiocb, &iter);
 	BUG_ON(ret == -EIOCBQUEUED);
