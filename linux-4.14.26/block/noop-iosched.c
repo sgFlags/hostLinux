@@ -119,7 +119,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
     }
     
     if (list_empty(&procd->request_list)) {
-        printk(KERN_ERR"about to delete procd! it is %u\n", proc->proc_pid);
+        printk(KERN_ERR"about to delete procd! it is %u\n", procd->proc_pid);
         rb_erase(&procd->proc_pid_node, &vmd->procs_pid_root);
         spin_unlock(&procd->proc_lock);
         kfree(procd);
@@ -127,7 +127,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
         
         spin_lock(&vmd->procs_vt_lock);
         insert_proc_into_vt_tree(procd, vmd);
-        printk(KERN_ERR"proc still has requests, insert this proc back\n");
+        printk(KERN_ERR"proc %u still has requests, insert this proc back\n", procd->proc_pid);
         spin_unlock(&vmd->procs_vt_lock);
         spin_unlock(&procd->proc_lock);
     }
