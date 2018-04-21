@@ -1,7 +1,7 @@
 #ifndef _TAGIO_H
 #define _TAGIO_H
 
-#include <linux/rbtree.c>
+#include <linux/rbtree.h>
 #include <linux/spinlock.h>
 
 #define FLAG_TAG    0x10000
