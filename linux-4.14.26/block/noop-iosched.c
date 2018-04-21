@@ -48,7 +48,7 @@ static int noop_dispatch(struct request_queue *q, int force)
 	return 0;
 }
 static void noop_add_request(struct request_queue *q, struct request *rq)
-
+{
 	struct noop_data *nd = q->elevator->elevator_data;
     struct vm_data *vmd, *temp_vmd;
     struct proc_data *procd, *next_procd;
