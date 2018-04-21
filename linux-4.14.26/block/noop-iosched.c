@@ -266,7 +266,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     //spin_unlock_irq(&vmd->procs_pid_lock);
 
     //spin_lock_irq(&procd->proc_lock);
-    list_del_init(&rq->queuelist);
+    //list_del_init(&rq->queuelist);
     //list_add(&rq->queuelist, &procd->request_list);
     list_add(&rq->tag_list, &procd->request_list);
     //spin_unlock_irq(&procd->proc_lock);
