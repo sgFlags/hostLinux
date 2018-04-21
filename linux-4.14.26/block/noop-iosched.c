@@ -49,6 +49,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     struct vm_data *vmd, *temp_vmd;
     struct proc_data *procd, *next_procd;
     struct rb_node *node;
+    int tag_ok = FLAG_TAG + FLAG_OK;
     u64 min_disktime;
     u64 stride;
 
@@ -68,7 +69,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     }
 
     /* find the process with smallest proc_disktime */
-    /*node = rb_first(&vmd->procs_vt_root);
+    node = rb_first(&vmd->procs_vt_root);
     procd = rb_entry(node, struct proc_data, proc_vt_node);
     printk(KERN_ERR "proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
     if (list_empty(&procd->request_list)) {
@@ -90,7 +91,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     printk(KERN_ERR"before delete tag_list\n");
 
     //list_del_init(&rq->queuelist);
-    printk(KERN_ERR"after delete tag_list\n");*/
+    printk(KERN_ERR"after delete tag_list\n");
     
     /*if (!list_empty(&procd->list)) {
         printk(KERN_ERR"same vt has more than one procs!\n");
@@ -125,7 +126,8 @@ my_fail:
 static void noop_add_request(struct request_queue *q, struct request *rq)
 {
 	struct noop_data *nd = q->elevator->elevator_data;
-    //if (rq->tagio.tag_flags == FLAG_TAG)
+    //if (rq->tagio.tag_flags == FLAG_TAG) {
+    //}
       //  return;
     list_add_tail(&rq->queuelist, &nd->queue);
 }
