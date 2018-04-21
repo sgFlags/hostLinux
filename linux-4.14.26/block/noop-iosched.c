@@ -12,11 +12,12 @@
 
 void insert_proc_into_vt_tree(struct proc_data *procd, struct vm_data *vmd)
 {
-    struct rb_node **link, *parent;
+    struct rb_node **link, *parent = NULL;
     struct rb_root *root = &vmd->procs_vt_root;
     struct proc_data *temp_procd;
     u64 value = procd->proc_disktime;
 
+    printk("in insert_proc_into_vt_tree\n");
     link = &root->rb_node;
     while (*link) {
         parent = *link;
