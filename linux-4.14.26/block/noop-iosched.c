@@ -170,7 +170,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     spin_lock(&nd->vms_lock);
     
     /* initialize min_disktime for vm */
-    vmd = list_first_entry_or_null(nd->vms, struct vm_data, vm_list);
+    vmd = list_first_entry_or_null(&nd->vms, struct vm_data, vm_list);
     if (vmd)
         min_disktime = vmd->vm_disktime;
     else
@@ -203,7 +203,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
 
     /* find the process this request belongs to */
     spin_lock(&vmd->procs_pid_lock);
-    if (RB_EMPTY_ROOT(vmd->procs_vt_root) || RB_EMPTY_ROOT(vmd->procs_pid_root))
+    if (RB_EMPTY_ROOT(&vmd->procs_vt_root) || RB_EMPTY_ROOT(&vmd->procs_pid_root))
         min_disktime = 0;
     else
         min_disktime = rb_entry(rb_first(vmd->procs_vt_root.rb_node), struct proc_data, proc_vt_node)->proc_disktime;
