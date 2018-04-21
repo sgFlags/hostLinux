@@ -49,14 +49,12 @@ static int noop_dispatch(struct request_queue *q, int force)
     struct vm_data *vmd, *temp_vmd;
     struct proc_data *procd, *next_procd;
     struct rb_node *node;
-    struct list_head *request_list;
-    struct request *req;
     u64 min_disktime;
     u64 stride;
 
     
     //spin_lock_irq(q->queue_lock);
-    printk(KERN_ERR "request enter noop add, about to lock nd->vms_lock\n");
+    //printk(KERN_ERR "request enter noop add, about to lock nd->vms_lock\n");
 
     /* find the vm with smallest vm_disktime */
     
@@ -64,7 +62,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     vmd = list_first_entry_or_null(&nd->vms, struct vm_data, vm_list);
     
     if (!vmd) {
-        printk(KERN_ERR "impossible!!\n");
+        //printk(KERN_ERR "impossible!!\n");
         //spin_unlock(&nd->vms_lock);
         goto my_fail;
     }
