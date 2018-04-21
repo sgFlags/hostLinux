@@ -187,10 +187,14 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     rq->tagio.proc_pid = 1000;
 
     backup_vmd = kmalloc(sizeof(struct vm_data), gfp_mask);
+    if (!backup_vmd)
+        printk("out of memory\n");
     backup_vmd->procs_vt_root = RB_ROOT;
     backup_vmd->procs_pid_root = RB_ROOT;
    
     backup_procd = kmalloc(sizeof(struct proc_data), gfp_mask);
+    if (!backup_procd)
+        printk("out of memory\n");
     backup_procd->tag_prio = rq->tag_prio;
     spin_lock_init(&backup_procd->proc_lock);
     /* set the vm this request belongs to */
