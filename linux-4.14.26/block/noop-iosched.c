@@ -181,7 +181,9 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
 
     if (rq->cmd_flags != 0)
         return 0;
-    
+ 
+    spin_lock_irq(q->queue_lock);
+
     rq->tag_prio = 7;
     rq->tagio.vm_pid = 1024;
     rq->tagio.proc_pid = 1000;
@@ -231,8 +233,6 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     spin_unlock(&nd->vms_lock);
     
     find = false;
-
-    printk("in noop set request\n");
     /* find the process this request belongs to */
     spin_lock(&vmd->procs_pid_lock);
     if (RB_EMPTY_ROOT(&vmd->procs_vt_root) || RB_EMPTY_ROOT(&vmd->procs_pid_root))
@@ -279,6 +279,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     spin_lock(&procd->proc_lock);
     list_add(&rq->tag_list, &procd->request_list);
     spin_unlock(&procd->proc_lock);
+    spin_unlock_irq(q->queue_lock);
     return 0;
 }
 
