@@ -172,7 +172,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     struct vm_data *vmd, *backup_vmd;
     struct proc_data *procd, *backup_procd; 
     struct rb_node **link;
-    struct rb_node *parent;
+    struct rb_node *parent = NULL;
     bool find = false;
     u64 min_disktime;
 
