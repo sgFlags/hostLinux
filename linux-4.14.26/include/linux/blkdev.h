@@ -202,15 +202,15 @@ struct request {
 			rq_end_io_fn		*saved_end_io;
 		} flush;
 
-        /* e6998 */
-        struct {
+    }; 
+    /* e6998 */
+    struct {
             pid_t   vm_pid;
             pid_t   proc_pid;
             struct vm_data *vmdata;
             struct proc_data *procdata;
             uint32_t tag_flags;
-        } tagio;
-	};
+    } tagio;
     struct list_head tag_list;
 
 
