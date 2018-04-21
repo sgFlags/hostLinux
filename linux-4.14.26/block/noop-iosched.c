@@ -135,7 +135,9 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
         spin_unlock(&procd->proc_lock);
         kfree(procd);
     } else {
+        spin_lock(&vmd->procs_vt_lock);
         insert_proc_into_vt_tree(procd, vmd);
+        spin_unlock(&vmd->procs_vt_lock);
         spin_unlock(&procd->proc_lock);
     }
 
@@ -190,6 +192,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
    
     backup_procd = kmalloc(sizeof(struct proc_data), gfp_mask);
     backup_procd->tag_prio = rq->tag_prio;
+    spin_lock_init(&backup_procd->proc_lock);
     /* set the vm this request belongs to */
     spin_lock(&nd->vms_lock);
     
@@ -259,7 +262,11 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
         rb_link_node(&procd->proc_pid_node, parent, link);
         rb_insert_color(&procd->proc_pid_node, &vmd->procs_pid_root);
         printk("after rb_insert_color\n");
+        spin_lock(&procd->proc_lock);
+        spin_lock(&vmd->procs_vt_lock);
         insert_proc_into_vt_tree(procd, vmd);
+        spin_unlock(&vmd->procs_vt_lock);
+        spin_unlock(&procd->proc_lock);
     } else {
         kfree(backup_procd);
     }
