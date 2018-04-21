@@ -442,7 +442,7 @@ ondemand_readahead(struct address_space *mapping,
 	pgoff_t prev_offset;
 
     /* e6998 */
-    uint8_t prio = ra->prio;
+    //uint8_t prio = ra->prio;
 
 	/*
 	 * If the request exceeds the readahead window, allow the read to
