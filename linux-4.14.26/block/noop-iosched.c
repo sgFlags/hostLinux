@@ -66,7 +66,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
     u64 min_disktime;
     u64 stride;
 
-    if (rq->tagio.tag_flags != FLAG_TAG)
+    //if (rq->tagio.tag_flags != FLAG_TAG)
         goto my_fail;
     
     printk(KERN_ERR "request enter noop add, prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tagio.tag_flags);
