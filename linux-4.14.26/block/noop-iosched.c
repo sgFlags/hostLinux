@@ -82,10 +82,10 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
     u64 min_disktime;
     u64 stride;
 
-    if (rq->tagio.tag_flags != FLAGS_TAG)
+    if (rq->tagio.tag_flags != FLAG_TAG)
         goto my_fail;
     
-    printk("request enter noop add, prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tag_flags);
+    printk("request enter noop add, prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tagio.tag_flags);
 
     /* find the vm with smallest vm_disktime */
     spin_lock(&nd->vms_lock);
@@ -193,7 +193,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     //rq->tag_prio = 7;
     //rq->tagio.vm_pid = 1024;
     //rq->tagio.proc_pid = 1000;
-    printk("request enter noop set, prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tag_flags);
+    printk("request enter noop set, prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tagio.tag_flags);
 
     backup_vmd = kmalloc(sizeof(struct vm_data), gfp_mask);
     if (!backup_vmd)
