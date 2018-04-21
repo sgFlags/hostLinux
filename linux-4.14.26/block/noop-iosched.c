@@ -85,14 +85,14 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
     if (rq->tagio.tag_flags != FLAG_TAG)
         goto my_fail;
     
-    printk("request enter noop add, prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tagio.tag_flags);
+    printk(KERN_ERR "request enter noop add, prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tagio.tag_flags);
 
     /* find the vm with smallest vm_disktime */
     spin_lock(&nd->vms_lock);
     vmd = list_first_entry_or_null(&nd->vms, struct vm_data, vm_list);
     
     if (!vmd) {
-        printk("impossible!!\n");
+        printk(KERN_ERR "impossible!!\n");
         spin_unlock(&nd->vms_lock);
         goto my_fail;
     }
@@ -111,7 +111,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
     procd = rb_entry(node, struct proc_data, proc_vt_node);
     spin_lock(&procd->proc_lock);
     if (list_empty(&procd->request_list)) {
-        printk("strange!!\n");
+        printk(KERN_ERR "strange!!\n");
         spin_unlock(&procd->proc_lock);
         goto my_fail;
     }
@@ -193,17 +193,17 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     //rq->tag_prio = 7;
     //rq->tagio.vm_pid = 1024;
     //rq->tagio.proc_pid = 1000;
-    printk("request enter noop set, prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tagio.tag_flags);
+    printk(KERN_ERR "request enter noop set, prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tagio.tag_flags);
 
     backup_vmd = kmalloc(sizeof(struct vm_data), gfp_mask);
     if (!backup_vmd)
-        printk("out of memory\n");
+        printk(KERN ERR "out of memory\n");
     backup_vmd->procs_vt_root = RB_ROOT;
     backup_vmd->procs_pid_root = RB_ROOT;
    
     backup_procd = kmalloc(sizeof(struct proc_data), gfp_mask);
     if (!backup_procd)
-        printk("out of memory\n");
+        printk(KERN_ERR "out of memory\n");
     backup_procd->tag_prio = rq->tag_prio;
     spin_lock_init(&backup_procd->proc_lock);
     /* set the vm this request belongs to */
@@ -252,7 +252,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
         parent = *link;
         procd = rb_entry(parent, struct proc_data, proc_pid_node);
 
-        printk("enter link\n");
+        printk("KERN_ERR enter link\n");
         if (rq->tagio.proc_pid < procd->proc_pid)
             link = &(*link)->rb_left;
         else if (rq->tagio.proc_pid > procd->proc_pid)
@@ -272,7 +272,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
         INIT_LIST_HEAD(&procd->request_list);
         rb_link_node(&procd->proc_pid_node, parent, link);
         rb_insert_color(&procd->proc_pid_node, &vmd->procs_pid_root);
-        printk("after rb_insert_color\n");
+        printk(KERN_ERR "after rb_insert_color\n");
         spin_lock(&procd->proc_lock);
         spin_lock(&vmd->procs_vt_lock);
         insert_proc_into_vt_tree(procd, vmd);
