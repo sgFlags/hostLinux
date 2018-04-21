@@ -224,6 +224,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     
     find = false;
 
+    printk("in noop set request\n");
     /* find the process this request belongs to */
     spin_lock(&vmd->procs_pid_lock);
     if (RB_EMPTY_ROOT(&vmd->procs_vt_root) || RB_EMPTY_ROOT(&vmd->procs_pid_root))
