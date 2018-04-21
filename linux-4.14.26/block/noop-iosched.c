@@ -62,12 +62,12 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
     struct proc_data *procd, *next_procd;
     struct rb_node *node;
     struct list_head *request_list;
-    struct request *next_rq;
+    struct request *req;
     u64 min_disktime;
     u64 stride;
 
-    if (rq->tagio.tag_flags != FLAG_TAG)
-        goto my_fail;
+    //if (rq->tagio.tag_flags != FLAG_TAG)
+      //  goto my_fail;
     
     //spin_lock_irq(q->queue_lock);
     printk(KERN_ERR "request enter noop add, about to lock nd->vms_lock\n");
@@ -102,14 +102,14 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
         //spin_unlock_irq(&procd->proc_lock);
         goto my_fail;
     }
-    rq = list_last_entry(&procd->request_list, struct request, tag_list);
-    stride = GLOBAL_S / rq->tag_prio;
+    req = list_last_entry(&procd->request_list, struct request, tag_list);
+    stride = GLOBAL_S / req->tag_prio;
    
     procd->proc_disktime += stride;
     //spin_lock(&nd->vms_lock);
     vmd->vm_disktime += stride;
     //spin_unlock(&nd->vms_lock);
-    list_del(&rq->tag_list);
+    list_del(&req->tag_list);
     
     if (!list_empty(&procd->list)) {
         printk(KERN_ERR"same vt has more than one procs!\n");
@@ -141,7 +141,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
     //spin_unlock_irq(q->queue_lock);
 
 my_fail:
-	list_add_tail(&rq->queuelist, &nd->queue);
+	list_add_tail(&req->queuelist, &nd->queue);
 }
 
 static struct request *
