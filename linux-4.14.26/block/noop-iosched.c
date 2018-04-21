@@ -197,7 +197,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
 
     backup_vmd = kmalloc(sizeof(struct vm_data), gfp_mask);
     if (!backup_vmd)
-        printk(KERN ERR "out of memory\n");
+        printk(KERN_ERR "out of memory\n");
     backup_vmd->procs_vt_root = RB_ROOT;
     backup_vmd->procs_pid_root = RB_ROOT;
    
