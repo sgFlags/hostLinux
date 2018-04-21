@@ -62,7 +62,7 @@ static int noop_dispatch(struct request_queue *q, int force)
 	struct noop_data *nd = q->elevator->elevator_data;
 	struct request *rq;
 
-    printk("in noop_dispatch\n");
+    //printk("in noop_dispatch\n");
 	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
 	if (rq) {
 		list_del_init(&rq->queuelist);
