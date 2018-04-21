@@ -54,7 +54,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
     struct proc_data *procd, *next_procd;
     struct rb_node *node;
     struct list_head *request_list;
-    struct request *rq, *next_rq;
+    struct request *next_rq;
     u64 min_disktime;
     u64 stride;
 
@@ -87,7 +87,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
     if (list_empty(&procd->request_list)) {
         printk("strange!!\n");
         spin_unlock(&procd->proc_lock);
-        goto my_mail;
+        goto my_fail;
     }
     rq = list_last_entry(&procd->request_list, struct request, tag_list);
     stride = GLOBAL_S / rq->tag_prio;
@@ -158,7 +158,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     
     rq->tag_prio = 7;
     rq->tagio.vm_pid = 1024;
-    rq->tagio.proc_pid = 1000
+    rq->tagio.proc_pid = 1000;
 
     backup_vmd = kmalloc(sizeof(struct vm_data), gfp_mask);
     backup_vmd->procs_vt_root = RB_ROOT;
