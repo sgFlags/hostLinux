@@ -43,12 +43,13 @@ void insert_proc_into_vt_tree(struct proc_data *procd, struct vm_data *vmd)
 {
     struct rb_node **link, *parent;
     struct rb_root *root = &vmd->procs_vt_root;
+    struct proc_data *temp_procd;
     u64 value = procd->proc_disktime;
 
     link = &root->rb_node;
     while (*link) {
         parent = *link;
-        struct proc_data *temp_procd = rb_entry(parent, struct proc_data, proc_vt_node);
+        temp_procd = rb_entry(parent, struct proc_data, proc_vt_node);
 
         if (value < temp_procd->proc_disktime)
             link = &(*link)->rb_left;
