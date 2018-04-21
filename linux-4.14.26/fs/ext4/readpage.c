@@ -243,8 +243,8 @@ int ext4_mpage_readpages(struct address_space *mapping,
             bio->vm_pid = td->vm_pid;
             bio->proc_pid = td->proc_pid;
             bio->tag_flags = td->tag_flags;
-            if (bio->tag_flags == FLAG_TAG)
-                printk("before submit_bio\n");
+            //if (bio->tag_flags == FLAG_TAG)
+              //  printk("before submit_bio\n");
 			submit_bio(bio);
 			bio = NULL;
 		}
@@ -282,8 +282,8 @@ int ext4_mpage_readpages(struct address_space *mapping,
             bio->vm_pid = td->vm_pid;
             bio->proc_pid = td->proc_pid;
             bio->tag_flags = td->tag_flags;
-			if (bio->tag_flags == FLAG_TAG)
-                printk("before submit_bio\n");
+			//if (bio->tag_flags == FLAG_TAG)
+              //  printk("before submit_bio\n");
             submit_bio(bio);
 			bio = NULL;
 		} else
@@ -295,8 +295,8 @@ int ext4_mpage_readpages(struct address_space *mapping,
             bio->vm_pid = td->vm_pid;
             bio->proc_pid = td->proc_pid;
             bio->tag_flags = td->tag_flags;
-			if (bio->tag_flags == FLAG_TAG)
-                printk("before submit_bio\n");
+			//if (bio->tag_flags == FLAG_TAG)
+              //  printk("before submit_bio\n");
             submit_bio(bio);
 			bio = NULL;
 		}
@@ -314,8 +314,8 @@ int ext4_mpage_readpages(struct address_space *mapping,
         bio->vm_pid = td->vm_pid;
         bio->proc_pid = td->proc_pid;
         bio->tag_flags = td->tag_flags;
-        if (bio->tag_flags == FLAG_TAG)
-            printk("before submit_bio\n");
+        //if (bio->tag_flags == FLAG_TAG)
+          //  printk("before submit_bio\n");
         submit_bio(bio);
     }
     return 0;
