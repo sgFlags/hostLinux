@@ -206,7 +206,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     if (RB_EMPTY_ROOT(&vmd->procs_vt_root) || RB_EMPTY_ROOT(&vmd->procs_pid_root))
         min_disktime = 0;
     else
-        min_disktime = rb_entry(rb_first(vmd->procs_vt_root.rb_node), struct proc_data, proc_vt_node)->proc_disktime;
+        min_disktime = rb_entry(rb_first(&vmd->procs_vt_root), struct proc_data, proc_vt_node)->proc_disktime;
    
     link = &vmd->procs_pid_root.rb_node;
     while (*link) {
