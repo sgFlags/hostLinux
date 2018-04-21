@@ -170,7 +170,8 @@ static inline struct request *__elv_next_request(struct request_queue *q)
 
 		if (!list_empty(&q->queue_head)) {
 			rq = list_entry_rq(q->queue_head.next);
-			//printk("directly return request\n");
+			if (rq->tagio.tag_flags == FLAG_TAG)
+                printk("return my request! prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tagio.tag_flags);
             return rq;
 		}
         //printk("pass empty condition\n");
