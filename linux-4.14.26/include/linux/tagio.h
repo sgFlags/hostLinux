@@ -5,6 +5,13 @@
 
 #define GLOBAL_S    50
 
+struct tag_data {
+    uint8_t prio;
+    pid_t vm_pid;
+    pid_t proc_pid;
+    uint32_t tag_flags;
+};
+
 struct proc_data {
     struct rb_node proc_vt_node;
     struct rb_node proc_pid_node;

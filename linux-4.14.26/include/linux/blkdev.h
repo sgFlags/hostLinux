@@ -212,6 +212,7 @@ struct request {
             uint32_t tag_flags;
     } tagio;
     struct list_head tag_list;
+    uint8_t tag_prio;
 
 
 	struct gendisk *rq_disk;
@@ -244,8 +245,6 @@ struct request {
 	unsigned long deadline;
 	struct list_head timeout_list;
 
-    /* e6998 */
-    uint8_t tag_prio;
 
 	/*
 	 * completion callback.

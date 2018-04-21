@@ -1639,7 +1639,9 @@ bool bio_attempt_back_merge(struct request_queue *q, struct request *req,
 
     /* e6998 */
     req->tag_prio = tag_prio_best(req->tag_prio, bio->tag_prio);
-
+    req->tagio.vm_pid = bio->vm_pid;
+    req->tagio.proc_pid = bio->proc_pid;
+    req->tagio.tag_flags = bio->tag_flags;
     //printk("in back merge, request->tag_prio is %d\n", req->tag_prio);
 	blk_account_io_start(req, false);
 	return true;
@@ -1667,7 +1669,10 @@ bool bio_attempt_front_merge(struct request_queue *q, struct request *req,
     
     /* e6998 */
     req->tag_prio = tag_prio_best(req->tag_prio, bio->tag_prio);
-    
+    req->tagio.vm_pid = bio->vm_pid;
+    req->tagio.proc_pid = bio->proc_pid;
+    req->tagio.tag_flags = bio->tag_flags;
+
     //printk("in front merge, request->tag_prio is %d\n", req->tag_prio);
 	blk_account_io_start(req, false);
 	return true;
@@ -1816,7 +1821,10 @@ void blk_init_request_from_bio(struct request *req, struct bio *bio)
 	req->write_hint = bio->bi_write_hint;
 	
     /* e6998 */
-    //req->tag_prio = bio->tag_prio;
+    req->tag_prio = bio->tag_prio;
+    req->tagio.vm_pid = bio->vm_pid;
+    req->tagio.proc_pid = bio->proc_pid;
+    req->tagio.tag_flags = bio->tag_flags;
 
     blk_rq_bio_prep(req->q, req, bio);
 }

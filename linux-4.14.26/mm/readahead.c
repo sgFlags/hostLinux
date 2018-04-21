@@ -19,6 +19,7 @@
 #include <linux/syscalls.h>
 #include <linux/file.h>
 #include <linux/mm_inline.h>
+#include <linux/tagio.h>
 
 #include "internal.h"
 
@@ -109,7 +110,7 @@ int read_cache_pages(struct address_space *mapping, struct list_head *pages,
 EXPORT_SYMBOL(read_cache_pages);
 
 static int read_pages(struct address_space *mapping, struct file *filp,
-		struct list_head *pages, unsigned int nr_pages, gfp_t gfp, uint8_t prio)
+		struct list_head *pages, unsigned int nr_pages, gfp_t gfp, struct tag_data *td)
 {
 	struct blk_plug plug;
 	unsigned page_idx;
@@ -198,7 +199,7 @@ int __do_page_cache_readahead(struct address_space *mapping, struct file *filp,
 	 * will then handle the error.
 	 */
 	if (ret)
-		read_pages(mapping, filp, &page_pool, ret, gfp_mask, 0);
+		read_pages(mapping, filp, &page_pool, ret, gfp_mask, NULL);
 	BUG_ON(!list_empty(&page_pool));
 out:
 	return ret;
@@ -207,7 +208,7 @@ out:
 /* e6998 */
 int __tag_do_page_cache_readahead(struct address_space *mapping, struct file *filp,
 			pgoff_t offset, unsigned long nr_to_read,
-			unsigned long lookahead_size, uint8_t prio)
+			unsigned long lookahead_size, struct tag_data *td)
 {
 	struct inode *inode = mapping->host;
 	struct page *page;
@@ -254,7 +255,7 @@ int __tag_do_page_cache_readahead(struct address_space *mapping, struct file *fi
 	 * will then handle the error.
 	 */
 	if (ret)
-		read_pages(mapping, filp, &page_pool, ret, gfp_mask, prio);
+		read_pages(mapping, filp, &page_pool, ret, gfp_mask, td);
 	BUG_ON(!list_empty(&page_pool));
 out:
 	return ret;
@@ -520,7 +521,7 @@ ondemand_readahead(struct address_space *mapping,
 	 */
 
     /* e6998 */
-	return __tag_do_page_cache_readahead(mapping, filp, offset, req_size, 0, prio);
+	return __tag_do_page_cache_readahead(mapping, filp, offset, req_size, 0, &ra->td);
 
 initial_readahead:
 	ra->start = offset;

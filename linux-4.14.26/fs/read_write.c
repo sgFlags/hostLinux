@@ -24,6 +24,7 @@
 
 #include <linux/uaccess.h>
 #include <asm/unistd.h>
+#include <linux/tagio.h>
 
 const struct file_operations generic_ro_fops = {
 	.llseek		= generic_file_llseek,
@@ -408,7 +409,7 @@ static ssize_t new_sync_read(struct file *filp, char __user *buf, size_t len, lo
 }
 
 /* e6998 */
-static ssize_t tag_new_sync_read(struct file *filp, char __user *buf, size_t len, loff_t *ppos, uint8_t prio)
+static ssize_t tag_new_sync_read(struct file *filp, char __user *buf, size_t len, loff_t *ppos, struct tag_data *td)
 {
 	struct iovec iov = { .iov_base = buf, .iov_len = len };
 	struct kiocb kiocb;
@@ -418,7 +419,10 @@ static ssize_t tag_new_sync_read(struct file *filp, char __user *buf, size_t len
 	init_sync_kiocb(&kiocb, filp);
 	kiocb.ki_pos = *ppos;
 	iov_iter_init(&iter, READ, &iov, 1, len);
-    iter.prio = prio;
+    iter.td.prio = td->prio;
+    iter.td.vm_pid = td->vm_pid;
+    iter.td.proc_pid = td->proc_tid;
+    iter.td.tag_flags = td->tag_flags;
 
 	ret = call_read_iter(filp, &kiocb, &iter);
 	BUG_ON(ret == -EIOCBQUEUED);
@@ -439,12 +443,12 @@ ssize_t __vfs_read(struct file *file, char __user *buf, size_t count,
 
 /* e6998 */
 ssize_t __tag_vfs_read(struct file *file, char __user *buf, size_t count,
-		   loff_t *pos, uint8_t prio)
+		   loff_t *pos, struct tag_data *td)
 {
 	if (file->f_op->read)
 		return file->f_op->read(file, buf, count, pos);
 	else if (file->f_op->read_iter)
-		return tag_new_sync_read(file, buf, count, pos, prio);
+		return tag_new_sync_read(file, buf, count, pos, td);
 	else
 		return -EINVAL;
 }
@@ -490,7 +494,7 @@ ssize_t vfs_read(struct file *file, char __user *buf, size_t count, loff_t *pos)
 }
 
 /* e6998 */
-ssize_t tag_vfs_read(struct file *file, char __user *buf, size_t count, loff_t *pos, uint8_t prio)
+ssize_t tag_vfs_read(struct file *file, char __user *buf, size_t count, loff_t *pos, struct tag_data *td)
 {
 	ssize_t ret;
 
@@ -505,7 +509,7 @@ ssize_t tag_vfs_read(struct file *file, char __user *buf, size_t count, loff_t *
 	if (!ret) {
 		if (count > MAX_RW_COUNT)
 			count =  MAX_RW_COUNT;
-		ret = __tag_vfs_read(file, buf, count, pos, prio);
+		ret = __tag_vfs_read(file, buf, count, pos, td);
 		if (ret > 0) {
 			fsnotify_access(file);
 			add_rchar(current, ret);
@@ -640,18 +644,26 @@ SYSCALL_DEFINE3(read, unsigned int, fd, char __user *, buf, size_t, count)
 }
 
 /* e6998 */
-SYSCALL_DEFINE4(tag_read, unsigned int, fd, char __user *, buf, size_t, count, uint8_t, prio)
+SYSCALL_DEFINE4(tag_read, unsigned int, fd, char __user *, buf, size_t, count, struct tag_data __user, *td)
 {
     struct fd f = fdget_pos(fd);
 	ssize_t ret = -EBADF;
+    struct tag_data *ktd;
 
+    ktd = kmalloc(sizeof(struct tag_data), GFP_KERNEL);
+
+    if (copy_from_user(ktd, td, sizeof(struct tag_data)))
+        return -EFAULT;
+    
+    ktd->tag_flags = FLAG_TAG;
 	if (f.file) {
 		loff_t pos = file_pos_read(f.file);
-		ret = tag_vfs_read(f.file, buf, count, &pos, prio);
+		ret = tag_vfs_read(f.file, buf, count, &pos, ktd);
 		if (ret >= 0)
 			file_pos_write(f.file, pos);
 		fdput_pos(f);
 	}
+    kfree(ktd);
     printk("using my tag_read\n");
 	return ret;
 }
@@ -700,6 +712,8 @@ SYSCALL_DEFINE5(tag_pread64, unsigned int, fd, char __user *, buf, size_t, count
     struct fd f;
 	ssize_t ret = -EBADF;
 
+    struct tag_data *ktd;
+
 	if (pos < 0)
 		return -EINVAL;
 
@@ -712,7 +726,8 @@ SYSCALL_DEFINE5(tag_pread64, unsigned int, fd, char __user *, buf, size_t, count
 	if (f.file) {
 		ret = -ESPIPE;
 		if (f.file->f_mode & FMODE_PREAD)
-			ret = tag_vfs_read(f.file, buf, count, &pos, tag_prio);
+			ret = tag_vfs_read(f.file, buf, count, &pos, ktd);
+			//ret = tag_vfs_read(f.file, buf, count, &pos, tag_prio);
 		fdput(f);
 	}
 

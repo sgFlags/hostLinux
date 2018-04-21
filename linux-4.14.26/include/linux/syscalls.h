@@ -66,6 +66,9 @@ struct old_linux_dirent;
 struct perf_event_attr;
 struct file_handle;
 struct sigaltstack;
+/* e6998 */
+struct tag_data;
+
 union bpf_attr;
 
 #include <linux/types.h>
@@ -80,7 +83,7 @@ union bpf_attr;
 #include <linux/quota.h>
 #include <linux/key.h>
 #include <trace/syscall.h>
-
+#include <linux/tagio.h>
 /*
  * __MAP - apply a macro to syscall arguments
  * __MAP(n, m, t1, a1, t2, a2, ..., tn, an) will expand to
@@ -599,7 +602,7 @@ asmlinkage long sys_read(unsigned int fd, char __user *buf, size_t count);
 asmlinkage long sys_readahead(int fd, loff_t offset, size_t count);
 
 /* e6998 */
-asmlinkage long sys_tag_read(unsigned int fd, char __user *buf, size_t count, uint8_t prio);
+asmlinkage long sys_tag_read(unsigned int fd, char __user *buf, size_t count, struct tag_data __user *td);
 asmlinkage long sys_tag_preadv64(unsigned long fd, const struct iovec __user *vec, unsigned long vlen, unsigned long pos, uint8_t tag_prio);
 asmlinkage long sys_tag_pread64(unsigned int fd, char __user *buf, size_t count, loff_t pos, uint8_t tag_prio);
 

@@ -39,6 +39,7 @@
 #include <linux/slab.h>
 #include <linux/bitops.h>
 #include <linux/iomap.h>
+#include <linux/tagio.h>
 
 #include "ext4_jbd2.h"
 #include "xattr.h"
@@ -3328,7 +3329,7 @@ static int ext4_readpage(struct file *file, struct page *page)
 	int ret = -EAGAIN;
 	struct inode *inode = page->mapping->host;
 
-    uint8_t prio = file->f_ra.prio;
+    struct tag_data td = file->f_ra.td;
 
     //printk("in ext4_readpage, prio is %d\n", prio);
 	trace_ext4_readpage(page);
@@ -3336,12 +3337,9 @@ static int ext4_readpage(struct file *file, struct page *page)
 	if (ext4_has_inline_data(inode))
 		ret = ext4_readpage_inline(inode, page);
 
-    /* e6998 */
-    if (prio == 255)
-        prio = 127;
 
 	if (ret == -EAGAIN)
-		return ext4_mpage_readpages(page->mapping, NULL, page, 1, prio);
+		return ext4_mpage_readpages(page->mapping, NULL, page, 1, &td);
 
 	return ret;
 }
@@ -3352,18 +3350,15 @@ ext4_readpages(struct file *file, struct address_space *mapping,
 {
 	struct inode *inode = mapping->host;
 
-    uint8_t prio = file->f_ra.prio;
+    struct tag_data td = file->f_ra.td;
 
     //printk("in ext4_readpages, prio is %d\n", prio);
 	/* If the file has inline data, no need to do readpages. */
 	if (ext4_has_inline_data(inode))
 		return 0;
 
-    /* e6998 */
-    if (prio == 255)
-        prio = 127;
 
-	return ext4_mpage_readpages(mapping, pages, NULL, nr_pages, prio);
+	return ext4_mpage_readpages(mapping, pages, NULL, nr_pages, &td);
 }
 
 static void ext4_invalidatepage(struct page *page, unsigned int offset,

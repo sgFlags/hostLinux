@@ -35,6 +35,7 @@
 #include <linux/delayed_call.h>
 #include <linux/uuid.h>
 #include <linux/errseq.h>
+#include <linux/tagio.h>
 
 #include <asm/byteorder.h>
 #include <uapi/linux/fs.h>
@@ -839,7 +840,7 @@ struct file_ra_state {
 	unsigned int mmap_miss;		/* Cache miss stat for mmap accesses */
 	loff_t prev_pos;		/* Cache last read() position */
     /* e6998 */
-    uint8_t prio;
+    struct tag_data td;
 };
 
 /*

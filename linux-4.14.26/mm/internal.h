@@ -60,7 +60,7 @@ extern int __do_page_cache_readahead(struct address_space *mapping,
 /* e6998 */
 extern int __tag_do_page_cache_readahead(struct address_space *mapping,
 		struct file *filp, pgoff_t offset, unsigned long nr_to_read,
-		unsigned long lookahead_size, uint8_t prio);
+		unsigned long lookahead_size, struct tag_data *td);
 
 /*
  * Submit IO for the read-ahead request in file_ra_state.
@@ -69,10 +69,10 @@ static inline unsigned long ra_submit(struct file_ra_state *ra,
 		struct address_space *mapping, struct file *filp)
 {
     /* e6998 */
-    uint8_t prio = ra->prio;
+    //uint8_t prio = &ra->td;
 
 	return __tag_do_page_cache_readahead(mapping, filp,
-					ra->start, ra->size, ra->async_size, prio);
+					ra->start, ra->size, ra->async_size, &ra->td);
 }
 
 /*

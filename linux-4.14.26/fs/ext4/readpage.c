@@ -44,6 +44,7 @@
 #include <linux/backing-dev.h>
 #include <linux/pagevec.h>
 #include <linux/cleancache.h>
+#include <linux/tagio.h>
 
 #include "ext4.h"
 
@@ -98,7 +99,7 @@ static void mpage_end_io(struct bio *bio)
 
 int ext4_mpage_readpages(struct address_space *mapping,
 			 struct list_head *pages, struct page *page,
-			 unsigned nr_pages, uint8_t prio)
+			 unsigned nr_pages, struct tag_data *td)
 {
 	struct bio *bio = NULL;
 	sector_t last_block_in_bio = 0;
@@ -238,7 +239,10 @@ int ext4_mpage_readpages(struct address_space *mapping,
 		 */
 		if (bio && (last_block_in_bio != blocks[0] - 1)) {
 		submit_and_realloc:
-            bio->tag_prio = prio;
+            bio->tag_prio = td->prio;
+            bio->vm_pid = td->vm_pid;
+            bio->proc_pid = td->proc_pid;
+            bio->tag_flags = td->tag_flags;
 			submit_bio(bio);
 			bio = NULL;
 		}
@@ -272,7 +276,10 @@ int ext4_mpage_readpages(struct address_space *mapping,
 		if (((map.m_flags & EXT4_MAP_BOUNDARY) &&
 		     (relative_block == map.m_len)) ||
 		    (first_hole != blocks_per_page)) {
-            bio->tag_prio = prio;
+            bio->tag_prio = td->prio;
+            bio->vm_pid = td->vm_pid;
+            bio->proc_pid = td->proc_pid;
+            bio->tag_flags = td->tag_flags;
 			submit_bio(bio);
 			bio = NULL;
 		} else
@@ -280,7 +287,10 @@ int ext4_mpage_readpages(struct address_space *mapping,
 		goto next_page;
 	confused:
 		if (bio) {
-            bio->tag_prio = prio;
+            bio->tag_prio = td->prio;
+            bio->vm_pid = td->vm_pid;
+            bio->proc_pid = td->proc_pid;
+            bio->tag_flags = td->tag_flags;
 			submit_bio(bio);
 			bio = NULL;
 		}
@@ -294,8 +304,11 @@ int ext4_mpage_readpages(struct address_space *mapping,
 	}
 	BUG_ON(pages && !list_empty(pages));
 	if (bio) {
-        bio->tag_prio = prio;
-		submit_bio(bio);
+        bio->tag_prio = td->prio;
+        bio->vm_pid = td->vm_pid;
+        bio->proc_pid = td->proc_pid;
+        bio->tag_flags = td->tag_flags;
+        submit_bio(bio);
     }
-	return 0;
+    return 0;
 }

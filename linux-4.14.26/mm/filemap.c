@@ -1950,12 +1950,9 @@ static ssize_t generic_file_buffered_read(struct kiocb *iocb,
 	unsigned long offset;      /* offset into pagecache page */
 	unsigned int prev_offset;
 	int error = 0;
-    /* e6998 */
-    uint8_t prio;
 
     /* e6998 */
-    prio = iter->prio;
-    ra->prio = prio;
+    ra->td = iter->td;
 
     //printk("in generic_file_buffered_read!\n");
 
@@ -2220,7 +2217,7 @@ generic_file_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 		struct inode *inode = mapping->host;
 		loff_t size;
 
-        printk("in direct read! prio is %u\n", iter->prio);
+        printk("in direct read! prio is %u\n", iter->td.prio);
 		size = i_size_read(inode);
 		if (iocb->ki_flags & IOCB_NOWAIT) {
 			if (filemap_range_has_page(mapping, iocb->ki_pos,

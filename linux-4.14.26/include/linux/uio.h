@@ -47,7 +47,8 @@ struct iov_iter {
 	};
 
     /* e6998 */
-    uint8_t prio;
+    //uint8_t prio;
+    struct tag_data td;
 };
 
 /*
