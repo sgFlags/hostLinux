@@ -237,6 +237,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
         parent = *link;
         procd = rb_entry(parent, struct proc_data, proc_pid_node);
 
+        printk("enter link\n");
         if (rq->tagio.proc_pid < procd->proc_pid)
             link = &(*link)->rb_left;
         else if (rq->tagio.proc_pid > procd->proc_pid)
