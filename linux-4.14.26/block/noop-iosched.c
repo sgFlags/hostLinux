@@ -78,7 +78,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     rq = list_last_entry(&procd->request_list, struct request, tag_list);
    
     if (rq == NULL) {
-        printk("rq is null??\n");
+        printk(KERN_ERR"rq is null??\n");
         goto my_fail;
     }
 
@@ -86,6 +86,9 @@ static int noop_dispatch(struct request_queue *q, int force)
    
     procd->proc_disktime += stride;
     vmd->vm_disktime += stride;
+    
+    printk(KERN_ERR"before delete tag_list\n");
+
     list_del_init(&rq->tag_list);
     
     /*if (!list_empty(&procd->list)) {
