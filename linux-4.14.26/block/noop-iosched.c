@@ -79,6 +79,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
     
     if (!vmd) {
         printk(KERN_ERR "impossible!!\n");
+        req = rq;
         //spin_unlock(&nd->vms_lock);
         goto my_fail;
     }
