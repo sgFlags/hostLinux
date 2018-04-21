@@ -88,12 +88,12 @@ static int noop_dispatch(struct request_queue *q, int force)
     procd->proc_disktime += stride;
     vmd->vm_disktime += stride;
     
-    printk(KERN_ERR"before delete tag_list\n");
+    //printk(KERN_ERR"before delete tag_list\n");
 
     //list_del_init(&rq->queuelist);
-    printk(KERN_ERR"after delete tag_list\n");
+    //printk(KERN_ERR"after delete tag_list\n");
     
-    /*if (!list_empty(&procd->list)) {
+    if (!list_empty(&procd->list)) {
         printk(KERN_ERR"same vt has more than one procs!\n");
         next_procd = list_first_entry(&procd->list, struct proc_data, list);
         list_del(&procd->list);
@@ -111,8 +111,8 @@ static int noop_dispatch(struct request_queue *q, int force)
         printk(KERN_ERR"proc %u still has requests, insert this proc back\n", procd->proc_pid);
     }
 
-    list_del_init(&rq->queuelist);
-	list_add_tail(&rq->queuelist, &nd->queue);*/
+    //list_del_init(&rq->queuelist);
+	//list_add_tail(&rq->queuelist, &nd->queue);
 
 my_fail:
 	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
