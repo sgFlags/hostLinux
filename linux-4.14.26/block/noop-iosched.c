@@ -54,7 +54,7 @@ static int noop_dispatch(struct request_queue *q, int force)
 
     /* find the vm with smallest vm_disktime */
     
-    /*vmd = list_first_entry_or_null(&nd->vms, struct vm_data, vm_list);
+    vmd = list_first_entry_or_null(&nd->vms, struct vm_data, vm_list);
     
     if (!vmd) {
         goto my_fail;
@@ -65,7 +65,7 @@ static int noop_dispatch(struct request_queue *q, int force)
             vmd = temp_vmd;
             min_disktime = vmd->vm_disktime;
          }
-    }*/
+    }
 
     /* find the process with smallest proc_disktime */
     /*node = rb_first(&vmd->procs_vt_root);
