@@ -100,6 +100,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
     //spin_lock_irq(&procd->proc_lock);
     if (list_empty(&procd->request_list)) {
         printk(KERN_ERR "strange!!\n");
+        req = rq;
         //spin_unlock_irq(&procd->proc_lock);
         goto my_fail;
     }
