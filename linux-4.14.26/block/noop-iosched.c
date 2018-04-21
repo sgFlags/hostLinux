@@ -115,7 +115,7 @@ static int noop_dispatch(struct request_queue *q, int force)
 
 my_fail:
 	rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
-	if (rq) {
+	if (rq && rq->) {
 		list_del_init(&rq->queuelist);
 		elv_dispatch_sort(q, rq);
 		return 1;
@@ -162,7 +162,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     bool find = false;
     u64 min_disktime;
 
-    if (!bio || bio->tag_flags != FLAG_TAG)
+    if (!bio || bio->tag_flags & FLAG_TAG == 0)
         return 0;
 
     backup_vmd = kmalloc(sizeof(struct vm_data), gfp_mask);

@@ -5,6 +5,7 @@
 #include <linux/spinlock.h>
 
 #define FLAG_TAG    0x10000
+#define FLAG_OK     0x1000
 
 #define GLOBAL_S    50
 
