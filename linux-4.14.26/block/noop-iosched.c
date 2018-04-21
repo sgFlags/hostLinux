@@ -68,7 +68,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     }
 
     /* find the process with smallest proc_disktime */
-    /*node = rb_first(&vmd->procs_vt_root);
+    node = rb_first(&vmd->procs_vt_root);
     procd = rb_entry(node, struct proc_data, proc_vt_node);
     printk(KERN_ERR "proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
     if (list_empty(&procd->request_list)) {
@@ -83,7 +83,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     vmd->vm_disktime += stride;
     list_del_init(&rq->tag_list);
     
-    if (!list_empty(&procd->list)) {
+    /*if (!list_empty(&procd->list)) {
         printk(KERN_ERR"same vt has more than one procs!\n");
         next_procd = list_first_entry(&procd->list, struct proc_data, list);
         list_del(&procd->list);
