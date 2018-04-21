@@ -12,6 +12,7 @@
 #include <linux/kernel.h>
 #include <linux/thread_info.h>
 #include <uapi/linux/uio.h>
+#include <linux/tagio.h>
 
 struct page;
 struct pipe_inode_info;
