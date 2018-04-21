@@ -27,8 +27,6 @@ struct proc_data {
 };
 
 struct vm_data {
-    //struct rb_node vm_vt_node;
-    //struct rb_node vm_pid_node;
     struct list_head vm_list;
     pid_t vm_pid;
     u64 vm_disktime;
@@ -40,11 +38,6 @@ struct vm_data {
 
 struct noop_data {
 	struct list_head queue;
-    //struct rb_root vms_vt_root;
-    //spinlock_t vms_vt_lock;
-    //struct rb_root vms_pid_root;
-    //struct idr vms_pid_idr;
-    //spinlock_t vms_pid_lock;
     struct list_head vms;
     spinlock_t vms_lock;
 };
