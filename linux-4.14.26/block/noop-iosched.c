@@ -90,7 +90,7 @@ static int noop_dispatch(struct request_queue *q, int force)
             if (!list_empty(&procd->request_list)) {
                 rq = list_last_entry(&procd->request_list, struct request, tag_list);
             } else {
-                printk(KERN_ERR "strange 2!!\n");
+                printk(KERN_ERR "strange 2!! proc->pid is %u\n", procd->proc_pid);
                 goto my_fail;
             }
         }
