@@ -73,10 +73,10 @@ static int noop_dispatch(struct request_queue *q, int force)
 
     /* find the process with smallest proc_disktime */
 
-    for (node = rb_first(&vmd->procs_vt_root); node != rb_last(&vmd->procs_vt_root); node = rb_next(node)) {
+    for (node = rb_first(&vmd->procs_vt_root); node != NULL; node = rb_next(node)) {
         procd = rb_entry(node, struct proc_data, proc_vt_node);
         if (!list_empty(&procd->request_list)) {
-            printk("strange!!\n");
+            //printk("strange!!\n");
             //goto my_fail;
             rq = list_last_entry(&procd->request_list, struct request, tag_list);
             find = true;
@@ -85,7 +85,9 @@ static int noop_dispatch(struct request_queue *q, int force)
         list_for_each_entry(temp_procd, &procd->list, list) {
             if (!list_empty(&temp_procd->request_list)) {
                 rq = list_last_entry(&temp_procd->request_list, struct request, tag_list);
+                rb_replace_node(&procd->proc_vt_node, &temp_procd->proc_vt_node, &vmd->procs_vt_root);
                 find = true;
+                procd = temp_procd;
                 printk("at least I find something\n");
                 break;
             }
@@ -96,7 +98,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     }
 
     find = false;
-    if (!rq) {
+    /*if (!rq) {
         if (!node) {
             printk("strange 1!!\n");
             goto my_fail;
@@ -119,7 +121,7 @@ static int noop_dispatch(struct request_queue *q, int force)
                 }
             }
         }
-    }
+    }*/
 
     //while (list_empty(&procd->request_list
     printk("proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
@@ -132,7 +134,7 @@ static int noop_dispatch(struct request_queue *q, int force)
 
     stride = GLOBAL_S / rq->tag_prio;
    
-    procd->proc_disktime += stride;
+    rq->tagio.procdata->proc_disktime += stride;
     vmd->vm_disktime += stride;
     
     //printk(KERN_ERR"before delete tag_list\n");
