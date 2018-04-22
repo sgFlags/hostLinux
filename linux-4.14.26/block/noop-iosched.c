@@ -97,7 +97,7 @@ static int noop_dispatch(struct request_queue *q, int force)
         printk("proc %u request list is empty\n", procd->proc_pid);
     }
 
-    find = false;
+    
     /*if (!rq) {
         if (!node) {
             printk("strange 1!!\n");
@@ -124,13 +124,13 @@ static int noop_dispatch(struct request_queue *q, int force)
     }*/
 
     //while (list_empty(&procd->request_list
-    printk("proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
     
    
     if (rq == NULL) {
         printk(KERN_ERR"rq is null??\n");
         goto my_fail;
     }
+    printk("proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
 
     stride = GLOBAL_S / rq->tag_prio;
    
