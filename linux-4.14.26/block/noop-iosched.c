@@ -127,7 +127,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     
    
     if (rq == NULL) {
-        printk(KERN_ERR"rq is null??\n");
+        //printk(KERN_ERR"rq is null??\n");
         goto my_fail;
     }
     printk("proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
