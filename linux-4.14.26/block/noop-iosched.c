@@ -99,7 +99,7 @@ static int noop_dispatch(struct request_queue *q, int force)
         }
         if (find)
             break;
-        printk("proc %u request list is empty\n", procd->proc_pid);
+        //printk("proc %u request list is empty\n", procd->proc_pid);
     }
 
 
@@ -118,7 +118,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     
     //printk(KERN_ERR"before delete tag_list\n");
 
-    list_del_init(&rq->tag_list);
+    //list_del_init(&rq->tag_list);
     rq->tagio.tag_flags = tag_ok;
     //printk(KERN_ERR"after delete tag_list\n");
     
@@ -146,8 +146,8 @@ my_fail:
     list_for_each_entry(temp_rq, &nd->queue, queuelist) {
         if (temp_rq->tagio.tag_flags != FLAG_TAG) {
             req = temp_rq;
-            //if (req->tagio.tag_flags == tag_ok)
-              //  list_del_init(&req->tag_list);
+            if (req->tagio.tag_flags == tag_ok)
+                list_del_init(&req->tag_list);
             break;
         }
     }
