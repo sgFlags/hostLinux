@@ -33,7 +33,7 @@ void insert_proc_into_vt_tree(struct proc_data *procd, struct vm_data *vmd)
     }
     rb_link_node(&procd->proc_vt_node, parent, link);
     rb_insert_color(&procd->proc_vt_node, root);
-    //printk(KERN_ERR"insert_proc_into_vt_tree finished for proc %u\n", procd->proc_pid);
+    printk(KERN_ERR"insert_proc_into_vt_tree finished for proc %u\n", procd->proc_pid);
 }
 
 static void noop_merged_requests(struct request_queue *q, struct request *rq,
