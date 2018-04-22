@@ -71,14 +71,34 @@ static int noop_dispatch(struct request_queue *q, int force)
     }
 
     /* find the process with smallest proc_disktime */
-    node = rb_first(&vmd->procs_vt_root);
-    procd = rb_entry(node, struct proc_data, proc_vt_node);
-    printk(KERN_ERR "proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
-    if (list_empty(&procd->request_list)) {
-        printk(KERN_ERR "strange!!\n");
-        goto my_fail;
+
+    for (node = rb_first(&vmd->procs_vt_root); node != rb_last(&vmd->procs_vt_root); node = rb_next(&vmd->procs_vt_root)) {
+        procd = rb_entry(node, struct proc_data, proc_vt_node);
+        if (!list_empty(&procd->request_list)) {
+            //printk(KERN_ERR "strange!!\n");
+            //goto my_fail;
+            rq = list_last_entry(&procd->request_list, struct request, tag_list);
+            break;
+        }
     }
-    rq = list_last_entry(&procd->request_list, struct request, tag_list);
+    if (!rq) {
+        if (!node) {
+            printk(KERN_ERR "strange!!\n");
+            goto my_fail;
+        } else {
+            procd = rb_entry(node, struct proc_data, proc_vt_node); 
+            if (!list_empty(&procd->request_list)) {
+                rq = list_last_entry(&procd->request_list, struct request, tag_list);
+            } else {
+                printk(KERN_ERR "strange!!\n");
+                goto my_fail;
+            }
+        }
+    }
+
+    //while (list_empty(&procd->request_list
+    printk(KERN_ERR "proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
+    
    
     if (rq == NULL) {
         printk(KERN_ERR"rq is null??\n");
@@ -197,7 +217,6 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     backup_procd->tag_prio = rq->tag_prio;
     spin_lock_init(&backup_procd->proc_lock);
     /* set the vm this request belongs to */
-    //spin_lock_irq(&nd->vms_lock);
     
     /* initialize min_disktime for vm */
     vmd = list_first_entry_or_null(&nd->vms, struct vm_data, vm_list);
@@ -229,11 +248,9 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     } else {
         kfree(backup_vmd);
     }
-    //spin_unlock_irq(&nd->vms_lock);
     
     find = false;
     /* find the process this request belongs to */
-    //spin_lock_irq(&vmd->procs_pid_lock);
     if (RB_EMPTY_ROOT(&vmd->procs_vt_root) || RB_EMPTY_ROOT(&vmd->procs_pid_root))
         min_disktime = 0;
     else
@@ -266,21 +283,11 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
         rb_link_node(&procd->proc_pid_node, parent, link);
         rb_insert_color(&procd->proc_pid_node, &vmd->procs_pid_root);
         printk(KERN_ERR "not find this proc, newly init a proc, after rb_insert_color, proc pid is %d\n", procd->proc_pid);
-        //spin_lock(&procd->proc_lock);
-        //spin_lock(&vmd->procs_vt_lock);
         insert_proc_into_vt_tree(procd, vmd);
-        //spin_unlock(&vmd->procs_vt_lock);
-        //spin_unlock(&procd->proc_lock);
     } else {
         kfree(backup_procd);
     }
-    //spin_unlock_irq(&vmd->procs_pid_lock);
-
-    //spin_lock_irq(&procd->proc_lock);
-    //list_del_init(&rq->queuelist);
-    //list_add(&rq->queuelist, &procd->request_list);
     list_add(&rq->tag_list, &procd->request_list);
-    //spin_unlock_irq(&procd->proc_lock);
     spin_unlock_irq(q->queue_lock);
     return 0;
 }
