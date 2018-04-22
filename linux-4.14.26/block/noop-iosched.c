@@ -84,7 +84,7 @@ static int noop_dispatch(struct request_queue *q, int force)
             //printk("strange!!\n");
             //goto my_fail;
             rq = list_last_entry(&procd->request_list, struct request, tag_list);
-            printk("process %u is found, procvt is %llu\n", procd->proc_pid, proc_disktime);
+            printk("process %u is found, procvt is %llu\n", procd->proc_pid, procd->proc_disktime);
             find = true;
             break;
         }
