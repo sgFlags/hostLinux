@@ -118,7 +118,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     
     if (!list_empty(&procd->list)) {
         next_procd = list_first_entry(&procd->list, struct proc_data, list);
-        list_del(&procd->list);
+        list_del_init(&procd->list);
         printk(KERN_ERR"same vt has more than one procs!\n");
         rb_replace_node(&procd->proc_vt_node, &next_procd->proc_vt_node, &vmd->procs_vt_root);
         printk(KERN_ERR"after replace!\n");
