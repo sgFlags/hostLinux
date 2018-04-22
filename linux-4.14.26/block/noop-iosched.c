@@ -72,7 +72,7 @@ static int noop_dispatch(struct request_queue *q, int force)
 
     /* find the process with smallest proc_disktime */
 
-    for (node = rb_first(&vmd->procs_vt_root); node != rb_last(&vmd->procs_vt_root); node = rb_next(&vmd->procs_vt_root)) {
+    for (node = rb_first(&vmd->procs_vt_root); node != rb_last(&vmd->procs_vt_root); node = rb_next(node)) {
         procd = rb_entry(node, struct proc_data, proc_vt_node);
         if (!list_empty(&procd->request_list)) {
             //printk(KERN_ERR "strange!!\n");
