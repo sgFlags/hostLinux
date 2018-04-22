@@ -22,11 +22,16 @@ void insert_proc_into_vt_tree(struct proc_data *procd, struct vm_data *vmd)
         parent = *link;
         temp_procd = rb_entry(parent, struct proc_data, proc_vt_node);
 
-        if (value < temp_procd->proc_disktime)
+        if (value < temp_procd->proc_disktime) {
+            printk("insert to left, value is %llu, original value is %llu\n", value, temp_procd->proc_disktime);
             link = &(*link)->rb_left;
-        if (value > temp_procd->proc_disktime)
+        }
+        if (value > temp_procd->proc_disktime) {
+            printk("insert to right, value is %llu, original value is %llu\n", value, temp_procd->proc_disktime);
             link = &(*link)->rb_right;
+        }
         else {
+            printk("same value, value is %llu, original value is %llu\n", value, temp_procd->proc_disktime);
             list_add_tail(&procd->list, &temp_procd->list);
             return;
         }
@@ -79,6 +84,7 @@ static int noop_dispatch(struct request_queue *q, int force)
             //printk("strange!!\n");
             //goto my_fail;
             rq = list_last_entry(&procd->request_list, struct request, tag_list);
+            printk("process %u is found, procvt is %llu\n", procd->proc_pid, proc_disktime);
             find = true;
             break;
         }
@@ -88,6 +94,7 @@ static int noop_dispatch(struct request_queue *q, int force)
                 rb_replace_node(&procd->proc_vt_node, &temp_procd->proc_vt_node, &vmd->procs_vt_root);
                 find = true;
                 procd = temp_procd;
+                printk("in link, process %u is found, procvt is %llu\n", procd->proc_pid, proc_disktime);
                 printk("at least I find something\n");
                 break;
             }
@@ -97,40 +104,14 @@ static int noop_dispatch(struct request_queue *q, int force)
         printk("proc %u request list is empty\n", procd->proc_pid);
     }
 
-    
-    /*if (!rq) {
-        if (!node) {
-            printk("strange 1!!\n");
-            goto my_fail;
-        } else {
-            procd = rb_entry(node, struct proc_data, proc_vt_node); 
-            if (!list_empty(&procd->request_list)) {
-                rq = list_last_entry(&procd->request_list, struct request, tag_list);
-            } else {
-                list_for_each_entry(temp_procd, &procd->list, list) {
-                    if (!list_empty(&temp_procd->request_list)) {
-                        rq = list_last_entry(&temp_procd->request_list, struct request, tag_list);
-                        find = true;
-                        printk("at least I find something2\n");
-                        break;
-                    }
-                }
-                if (!find) {
-                    printk("strange 2!! proc->pid is %u\n", procd->proc_pid);
-                    goto my_fail;
-                }
-            }
-        }
-    }*/
 
-    //while (list_empty(&procd->request_list
     
    
     if (rq == NULL) {
         //printk(KERN_ERR"rq is null??\n");
         goto my_fail;
     }
-    printk("proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
+    printk("proc %u is going to be dispatched! proctime is %llu\n", procd->proc_pid, procd->proc_disktime);
 
     stride = GLOBAL_S / rq->tag_prio;
    
@@ -146,7 +127,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     if (!list_empty(&procd->list)) {
         next_procd = list_first_entry(&procd->list, struct proc_data, list);
         list_del_init(&procd->list);
-       // printk(KERN_ERR"same vt has more than one procs!\n");
+        //printk(KERN_ERR"same vt has more than one procs!\n");
         rb_replace_node(&procd->proc_vt_node, &next_procd->proc_vt_node, &vmd->procs_vt_root);
        // printk(KERN_ERR"after replace!\n");
     } else {
@@ -162,16 +143,13 @@ static int noop_dispatch(struct request_queue *q, int force)
         //printk(KERN_ERR"proc %u still has requests, insert this proc back\n", procd->proc_pid);
     }
 
-    //list_del_init(&rq->queuelist);
-	//list_add_tail(&rq->queuelist, &nd->queue);
 
 my_fail:
-	//rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
     list_for_each_entry(temp_rq, &nd->queue, queuelist) {
         if (temp_rq->tagio.tag_flags != FLAG_TAG) {
             req = temp_rq;
-            if (req->tagio.tag_flags == tag_ok)
-                list_del_init(&req->tag_list);
+            //if (req->tagio.tag_flags == tag_ok)
+              //  list_del_init(&req->tag_list);
             break;
         }
     }
