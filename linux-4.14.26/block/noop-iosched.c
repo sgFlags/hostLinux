@@ -75,7 +75,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     for (node = rb_first(&vmd->procs_vt_root); node != rb_last(&vmd->procs_vt_root); node = rb_next(node)) {
         procd = rb_entry(node, struct proc_data, proc_vt_node);
         if (!list_empty(&procd->request_list)) {
-            printk(KERN_ERR "strange!!\n");
+            printk("strange!!\n");
             //goto my_fail;
             rq = list_last_entry(&procd->request_list, struct request, tag_list);
             break;
@@ -83,21 +83,21 @@ static int noop_dispatch(struct request_queue *q, int force)
     }
     if (!rq) {
         if (!node) {
-            printk(KERN_ERR "strange 1!!\n");
+            printk("strange 1!!\n");
             goto my_fail;
         } else {
             procd = rb_entry(node, struct proc_data, proc_vt_node); 
             if (!list_empty(&procd->request_list)) {
                 rq = list_last_entry(&procd->request_list, struct request, tag_list);
             } else {
-                printk(KERN_ERR "strange 2!! proc->pid is %u\n", procd->proc_pid);
+                printk("strange 2!! proc->pid is %u\n", procd->proc_pid);
                 goto my_fail;
             }
         }
     }
 
     //while (list_empty(&procd->request_list
-    printk(KERN_ERR "proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
+    printk("proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
     
    
     if (rq == NULL) {
