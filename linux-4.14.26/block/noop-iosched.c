@@ -94,7 +94,7 @@ static int noop_dispatch(struct request_queue *q, int force)
                 rb_replace_node(&procd->proc_vt_node, &temp_procd->proc_vt_node, &vmd->procs_vt_root);
                 find = true;
                 procd = temp_procd;
-                printk("in link, process %u is found, procvt is %llu\n", procd->proc_pid, proc_disktime);
+                printk("in link, process %u is found, procvt is %llu\n", procd->proc_pid, procd->proc_disktime);
                 printk("at least I find something\n");
                 break;
             }
