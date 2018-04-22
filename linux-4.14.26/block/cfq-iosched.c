@@ -3531,7 +3531,7 @@ static int cfq_dispatch_requests(struct request_queue *q, int force)
 	if (!cfqd->busy_queues)
 		return 0;
 
-    printk("in cfq_dispatch_request\n");
+    //printk("in cfq_dispatch_request\n");
 
 	if (unlikely(force))
 		return cfq_forced_dispatch(cfqd);
