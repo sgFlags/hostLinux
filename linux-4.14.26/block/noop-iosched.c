@@ -33,7 +33,7 @@ void insert_proc_into_vt_tree(struct proc_data *procd, struct vm_data *vmd)
     }
     rb_link_node(&procd->proc_vt_node, parent, link);
     rb_insert_color(&procd->proc_vt_node, root);
-    printk(KERN_ERR"insert_proc_into_vt_tree finished for proc %u\n", procd->proc_pid);
+    //printk(KERN_ERR"insert_proc_into_vt_tree finished for proc %u\n", procd->proc_pid);
 }
 
 static void noop_merged_requests(struct request_queue *q, struct request *rq,
@@ -119,9 +119,9 @@ static int noop_dispatch(struct request_queue *q, int force)
     if (!list_empty(&procd->list)) {
         next_procd = list_first_entry(&procd->list, struct proc_data, list);
         list_del_init(&procd->list);
-        printk(KERN_ERR"same vt has more than one procs!\n");
+       // printk(KERN_ERR"same vt has more than one procs!\n");
         rb_replace_node(&procd->proc_vt_node, &next_procd->proc_vt_node, &vmd->procs_vt_root);
-        printk(KERN_ERR"after replace!\n");
+       // printk(KERN_ERR"after replace!\n");
     } else {
         rb_erase(&procd->proc_vt_node, &vmd->procs_vt_root);
     }
