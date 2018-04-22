@@ -440,6 +440,7 @@ dio_bio_alloc(struct dio *dio, struct dio_submit *sdio,
 static inline void dio_bio_submit(struct dio *dio, struct dio_submit *sdio)
 {
 	struct bio *bio = sdio->bio;
+    struct iov_iter *iter = sdio->iter;
 	unsigned long flags;
 
 	bio->bi_private = dio;
@@ -447,6 +448,10 @@ static inline void dio_bio_submit(struct dio *dio, struct dio_submit *sdio)
 	spin_lock_irqsave(&dio->bio_lock, flags);
 	dio->refcount++;
 	spin_unlock_irqrestore(&dio->bio_lock, flags);
+
+    if (iter) {
+        printk("iter exists! prio is %d\n", iter->td.prio);
+    }
 
 	if (dio->is_async && dio->op == REQ_OP_READ && dio->should_dirty)
 		bio_set_pages_dirty(bio);
@@ -1336,8 +1341,10 @@ do_blockdev_direct_IO(struct kiocb *iocb, struct inode *inode,
 		put_page(sdio.cur_page);
 		sdio.cur_page = NULL;
 	}
-	if (sdio.bio)
+	if (sdio.bio) {
+        printk("enter dio_bio_submit\n");
 		dio_bio_submit(dio, &sdio);
+    }
 
 	blk_finish_plug(&plug);
 
