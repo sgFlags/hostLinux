@@ -105,9 +105,10 @@ static int noop_dispatch(struct request_queue *q, int force)
 
     
    
-    if (rq == NULL)// || rq->tagio.tag_flags == tag_ok) {
+    if (rq == NULL || rq->tagio.tag_flags == tag_ok) {
         //printk(KERN_ERR"rq is null??\n");
         goto my_fail;
+    }
     printk("proc %u is going to be dispatched! proctime is %llu, prio is %u\n", procd->proc_pid, procd->proc_disktime, rq->tag_prio);
 
     stride = GLOBAL_S / rq->tag_prio;
@@ -117,7 +118,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     
     //printk(KERN_ERR"before delete tag_list\n");
 
-    list_del_init(&rq->tag_list);
+    //list_del_init(&rq->tag_list);
     rq->tagio.tag_flags = tag_ok;
     //printk(KERN_ERR"after delete tag_list\n");
     
@@ -145,8 +146,8 @@ my_fail:
     list_for_each_entry(temp_rq, &nd->queue, queuelist) {
         if (temp_rq->tagio.tag_flags != FLAG_TAG) {
             req = temp_rq;
-            //if (req->tagio.tag_flags == tag_ok)
-              //  list_del_init(&req->tag_list);
+            if (req->tagio.tag_flags == tag_ok)
+                list_del_init(&req->tag_list);
             break;
         }
     }
