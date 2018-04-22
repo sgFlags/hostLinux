@@ -120,7 +120,7 @@ static int noop_dispatch(struct request_queue *q, int force)
 my_fail:
 	//rq = list_first_entry_or_null(&nd->queue, struct request, queuelist);
     list_for_each_entry(temp_rq, &nd->queue, queuelist) {
-        if (temp_rq->tagio.tag_data != FLAG_TAG) {
+        if (temp_rq->tagio.tag_flags != FLAG_TAG) {
             req = temp_rq;
             break;
         }
