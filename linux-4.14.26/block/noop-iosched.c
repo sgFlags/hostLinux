@@ -168,7 +168,7 @@ my_fail:
     list_for_each_entry(temp_rq, &nd->queue, queuelist) {
         if (temp_rq->tagio.tag_flags != FLAG_TAG) {
             req = temp_rq;
-            list_del_init(&rq->tag_list);
+            list_del_init(&req->tag_list);
             break;
         }
     }
