@@ -94,6 +94,8 @@ static int noop_dispatch(struct request_queue *q, int force)
             break;
         printk("proc %u request list is empty\n", procd->proc_pid);
     }
+
+    find = false;
     if (!rq) {
         if (!node) {
             printk("strange 1!!\n");
@@ -103,8 +105,18 @@ static int noop_dispatch(struct request_queue *q, int force)
             if (!list_empty(&procd->request_list)) {
                 rq = list_last_entry(&procd->request_list, struct request, tag_list);
             } else {
-                printk("strange 2!! proc->pid is %u\n", procd->proc_pid);
-                goto my_fail;
+                list_for_each_entry(temp_procd, &procd->list, list) {
+                    if (!list_empty(&temp_procd->request_list)) {
+                        rq = list_last_entry(&temp_procd->request_list, struct request, tag_list);
+                        find = true;
+                        printk("at least I find something2\n");
+                        break;
+                    }
+                }
+                if (!find) {
+                    printk("strange 2!! proc->pid is %u\n", procd->proc_pid);
+                    goto my_fail;
+                }
             }
         }
     }
