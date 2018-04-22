@@ -33,7 +33,7 @@ void insert_proc_into_vt_tree(struct proc_data *procd, struct vm_data *vmd)
     }
     rb_link_node(&procd->proc_vt_node, parent, link);
     rb_insert_color(&procd->proc_vt_node, root);
-    printk(KERN_ERR"insert_proc_into_vt_tree finished for proc %u\n", procd->proc_pid);
+    //printk(KERN_ERR"insert_proc_into_vt_tree finished for proc %u\n", procd->proc_pid);
 }
 
 static void noop_merged_requests(struct request_queue *q, struct request *rq,
@@ -83,21 +83,21 @@ static int noop_dispatch(struct request_queue *q, int force)
     }
     if (!rq) {
         if (!node) {
-            printk(KERN_ERR "strange!!\n");
+            //printk(KERN_ERR "strange!!\n");
             goto my_fail;
         } else {
             procd = rb_entry(node, struct proc_data, proc_vt_node); 
             if (!list_empty(&procd->request_list)) {
                 rq = list_last_entry(&procd->request_list, struct request, tag_list);
             } else {
-                printk(KERN_ERR "strange!!\n");
+                //printk(KERN_ERR "strange!!\n");
                 goto my_fail;
             }
         }
     }
 
     //while (list_empty(&procd->request_list
-    printk(KERN_ERR "proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
+    //printk(KERN_ERR "proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
     
    
     if (rq == NULL) {
@@ -128,10 +128,10 @@ static int noop_dispatch(struct request_queue *q, int force)
     if (list_empty(&procd->request_list)) {
         //printk(KERN_ERR"about to delete procd! it is %u\n", procd->proc_pid);
         insert_proc_into_vt_tree(procd, vmd);
-        printk(KERN_ERR"proc %u doesn't have any requests, but still insert this proc back\n", procd->proc_pid);
+        //printk(KERN_ERR"proc %u doesn't have any requests, but still insert this proc back\n", procd->proc_pid);
     } else {
         insert_proc_into_vt_tree(procd, vmd);
-        printk(KERN_ERR"proc %u still has requests, insert this proc back\n", procd->proc_pid);
+        //printk(KERN_ERR"proc %u still has requests, insert this proc back\n", procd->proc_pid);
     }
 
     //list_del_init(&rq->queuelist);
@@ -205,7 +205,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     rq->tagio.vm_pid = bio->vm_pid;
     rq->tagio.proc_pid = bio->proc_pid;
     rq->tagio.tag_flags = bio->tag_flags;
-    printk(KERN_ERR "request enter noop set, prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tagio.tag_flags);
+    //printk(KERN_ERR "request enter noop set, prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tagio.tag_flags);
 
     if (!backup_vmd)
         printk(KERN_ERR "out of memory\n");
@@ -230,7 +230,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
         if (rq->tagio.vm_pid == vmd->vm_pid) {
             find = true;
             rq->tagio.vmdata = vmd;
-            printk(KERN_ERR"find vm for this request, vm is %u\n", vmd->vm_pid);
+            //printk(KERN_ERR"find vm for this request, vm is %u\n", vmd->vm_pid);
             break;
         }
     } 
@@ -244,7 +244,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
         spin_lock_init(&vmd->procs_pid_lock);
         rq->tagio.vmdata = vmd;
         list_add(&vmd->vm_list, &nd->vms);
-        printk(KERN_ERR"not find vm for this request, init this vm, vm is %u\n", vmd->vm_pid);
+        //printk(KERN_ERR"not find vm for this request, init this vm, vm is %u\n", vmd->vm_pid);
     } else {
         kfree(backup_vmd);
     }
@@ -266,7 +266,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
         else if (rq->tagio.proc_pid > procd->proc_pid)
             link = &(*link)->rb_right;
         else {
-            printk(KERN_ERR"find proc for this request, proc_pid is %u\n", procd->proc_pid);
+            //printk(KERN_ERR"find proc for this request, proc_pid is %u\n", procd->proc_pid);
             find = true;
             rq->tagio.procdata = procd;
             break;
@@ -282,7 +282,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
         INIT_LIST_HEAD(&procd->request_list);
         rb_link_node(&procd->proc_pid_node, parent, link);
         rb_insert_color(&procd->proc_pid_node, &vmd->procs_pid_root);
-        printk(KERN_ERR "not find this proc, newly init a proc, after rb_insert_color, proc pid is %d\n", procd->proc_pid);
+        //printk(KERN_ERR "not find this proc, newly init a proc, after rb_insert_color, proc pid is %d\n", procd->proc_pid);
         insert_proc_into_vt_tree(procd, vmd);
     } else {
         kfree(backup_procd);
