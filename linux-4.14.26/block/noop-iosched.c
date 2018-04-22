@@ -82,7 +82,7 @@ static int noop_dispatch(struct request_queue *q, int force)
             //printk("strange!!\n");
             //goto my_fail;
             rq = list_last_entry(&procd->request_list, struct request, tag_list);
-            printk("process %u is found, procvt is %llu\n", procd->proc_pid, procd->proc_disktime);
+            printk("process %u is found, procvt is %llu, prio is %u\n", procd->proc_pid, procd->proc_disktime, rq->tag_prio);
             find = true;
             break;
         }
@@ -92,7 +92,7 @@ static int noop_dispatch(struct request_queue *q, int force)
                 rb_replace_node(&procd->proc_vt_node, &temp_procd->proc_vt_node, &vmd->procs_vt_root);
                 find = true;
                 procd = temp_procd;
-                printk("in link, process %u is found, procvt is %llu\n", procd->proc_pid, procd->proc_disktime);
+                printk("in link, process %u is found, procvt is %llu, prio is %u\n", procd->proc_pid, procd->proc_disktime, rq->tag_prio);
                 //printk("at least I find something\n");
                 break;
             }
@@ -109,7 +109,7 @@ static int noop_dispatch(struct request_queue *q, int force)
         //printk(KERN_ERR"rq is null??\n");
         goto my_fail;
     }
-    printk("proc %u is going to be dispatched! proctime is %llu\n", procd->proc_pid, procd->proc_disktime);
+    printk("proc %u is going to be dispatched! proctime is %llu, prio is %u\n", procd->proc_pid, procd->proc_disktime, rq->tag_prio);
 
     stride = GLOBAL_S / rq->tag_prio;
    
