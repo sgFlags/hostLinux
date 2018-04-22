@@ -97,7 +97,7 @@ static int noop_dispatch(struct request_queue *q, int force)
     }
 
     //while (list_empty(&procd->request_list
-    //printk(KERN_ERR "proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
+    printk(KERN_ERR "proc %u is going to be dispatched! before procd->proc_lock\n", procd->proc_pid);
     
    
     if (rq == NULL) {
