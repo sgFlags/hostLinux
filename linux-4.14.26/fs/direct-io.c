@@ -449,9 +449,9 @@ static inline void dio_bio_submit(struct dio *dio, struct dio_submit *sdio)
 	dio->refcount++;
 	spin_unlock_irqrestore(&dio->bio_lock, flags);
 
-    if (iter) {
-        printk("iter exists! prio is %d\n", iter->td.prio);
-    }
+    //if (iter) {
+        //printk("iter exists! prio is %d\n", iter->td.prio);
+    //}
 
 	if (dio->is_async && dio->op == REQ_OP_READ && dio->should_dirty)
 		bio_set_pages_dirty(bio);
