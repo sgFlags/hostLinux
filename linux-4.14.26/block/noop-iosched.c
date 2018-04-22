@@ -45,12 +45,12 @@ static void noop_merged_requests(struct request_queue *q, struct request *rq,
 static int noop_dispatch(struct request_queue *q, int force)
 {
 	struct noop_data *nd = q->elevator->elevator_data;
-	struct request *rq;
+	struct request *rq = NULL;
     struct request *req = NULL;
     struct request *temp_rq = NULL;
     struct vm_data *vmd, *temp_vmd;
     struct proc_data *procd, *next_procd;
-    struct rb_node *node;
+    struct rb_node *node = NULL;
     int tag_ok = FLAG_TAG + FLAG_OK;
     u64 min_disktime;
     u64 stride;
