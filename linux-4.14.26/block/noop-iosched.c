@@ -25,12 +25,10 @@ void insert_proc_into_vt_tree(struct proc_data *procd, struct vm_data *vmd)
         if (value < temp_procd->proc_disktime) {
             printk("insert to left, value is %llu, original value is %llu\n", value, temp_procd->proc_disktime);
             link = &(*link)->rb_left;
-        }
-        if (value > temp_procd->proc_disktime) {
+        } else if (value > temp_procd->proc_disktime) {
             printk("insert to right, value is %llu, original value is %llu\n", value, temp_procd->proc_disktime);
             link = &(*link)->rb_right;
-        }
-        else {
+        } else {
             printk("same value, value is %llu, original value is %llu\n", value, temp_procd->proc_disktime);
             list_add_tail(&procd->list, &temp_procd->list);
             return;
