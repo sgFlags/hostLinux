@@ -93,19 +93,19 @@ static int noop_dispatch(struct request_queue *q, int force)
                 find = true;
                 procd = temp_procd;
                 printk("in link, process %u is found, procvt is %llu\n", procd->proc_pid, procd->proc_disktime);
-                printk("at least I find something\n");
+                //printk("at least I find something\n");
                 break;
             }
         }
         if (find)
             break;
-        //printk("proc %u request list is empty\n", procd->proc_pid);
+        printk("proc %u request list is empty\n", procd->proc_pid);
     }
 
 
     
    
-    if (rq == NULL) {
+    if (rq == NULL || rq->tagio.tag_flags == tag_ok) {
         //printk(KERN_ERR"rq is null??\n");
         goto my_fail;
     }
