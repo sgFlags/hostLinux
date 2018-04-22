@@ -49,11 +49,12 @@ static int noop_dispatch(struct request_queue *q, int force)
     struct request *req = NULL;
     struct request *temp_rq = NULL;
     struct vm_data *vmd, *temp_vmd;
-    struct proc_data *procd, *next_procd;
+    struct proc_data *procd, *next_procd, *temp_procd;
     struct rb_node *node = NULL;
     int tag_ok = FLAG_TAG + FLAG_OK;
     u64 min_disktime;
     u64 stride;
+    int find = false;
 
     /* find the vm with smallest vm_disktime */
     
@@ -78,8 +79,20 @@ static int noop_dispatch(struct request_queue *q, int force)
             printk("strange!!\n");
             //goto my_fail;
             rq = list_last_entry(&procd->request_list, struct request, tag_list);
+            find = true;
             break;
         }
+        list_for_each_entry(temp_procd, &procd->list, list) {
+            if (!list_empty(&temp_procd->request_list)) {
+                rq = list_last_entry(&temp_procd->request_list, struct request, tag_list);
+                find = true;
+                printk("at least I find something\n");
+                break;
+            }
+        }
+        if (find)
+            break;
+        printk("proc %u request list is empty\n", procd->proc_pid);
     }
     if (!rq) {
         if (!node) {
