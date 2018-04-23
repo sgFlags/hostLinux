@@ -190,7 +190,7 @@ noop_latter_request(struct request_queue *q, struct request *rq)
 /* e6998 */
 static int noop_set_request(struct request_queue *q, struct request *rq, struct bio *bio, gfp_t gfp_mask)
 {
-    //printk("in noop_set_request!\n");
+    printk("in noop_set_request!\n");
     struct noop_data *nd = q->elevator->elevator_data;
     struct vm_data *vmd, *backup_vmd;
     struct proc_data *procd, *backup_procd; 

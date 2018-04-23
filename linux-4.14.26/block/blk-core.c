@@ -34,6 +34,7 @@
 #include <linux/pm_runtime.h>
 #include <linux/blk-cgroup.h>
 #include <linux/debugfs.h>
+#include <linux/tagio.h>
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/block.h>
@@ -1274,7 +1275,7 @@ static struct request *__get_request(struct request_list *rl, unsigned int op,
 	rq->rq_flags = rq_flags;
 
     /* e6998 */
-    rq->tag_prio = 8;
+    //rq->tag_prio = 8;
 
 	/* init elvpriv */
 	if (rq_flags & RQF_ELVPRIV) {
@@ -1641,8 +1642,9 @@ bool bio_attempt_back_merge(struct request_queue *q, struct request *req,
     req->tag_prio = tag_prio_best(req->tag_prio, bio->tag_prio);
     req->tagio.vm_pid = bio->vm_pid;
     req->tagio.proc_pid = bio->proc_pid;
-    req->tagio.tag_flags = bio->tag_flags;
-    //printk("in back merge, request->tag_prio is %d\n", req->tag_prio);
+    if (bio->tag_flags == FLAG_TAG || req->tag_flags == FLAG_TAG)
+        req->tagio.tag_flags = bio->tag_flags;
+    printk("in back merge, request->tag_flags is %d\n", req->tag_flags);
 	blk_account_io_start(req, false);
 	return true;
 }
@@ -1671,9 +1673,12 @@ bool bio_attempt_front_merge(struct request_queue *q, struct request *req,
     req->tag_prio = tag_prio_best(req->tag_prio, bio->tag_prio);
     req->tagio.vm_pid = bio->vm_pid;
     req->tagio.proc_pid = bio->proc_pid;
-    req->tagio.tag_flags = bio->tag_flags;
+    //req->tagio.tag_flags = bio->tag_flags;
 
-    //printk("in front merge, request->tag_prio is %d\n", req->tag_prio);
+    if (bio->tag_flags == FLAG_TAG || req->tag_flags == FLAG_TAG)
+        req->tagio.tag_flags = bio->tag_flags;
+    printk("in front merge, request->tag_flags is %d\n", req->tag_flags);
+    //printk("infront merge, request->tag_prio is %d\n", req->tag_prio);
 	blk_account_io_start(req, false);
 	return true;
 }
@@ -1820,7 +1825,10 @@ void blk_init_request_from_bio(struct request *req, struct bio *bio)
 		req->ioprio = IOPRIO_PRIO_VALUE(IOPRIO_CLASS_NONE, 0);
 	req->write_hint = bio->bi_write_hint;
 	
-    
+    /* e6998 */
+    //req->tagio.vm_pid = bio->vm_pid;
+    //req->tagio.proc_pid = bio->proc_pid;
+    //req->tagio.
 
     blk_rq_bio_prep(req->q, req, bio);
 }
@@ -1843,7 +1851,7 @@ static blk_qc_t blk_queue_bio(struct request_queue *q, struct bio *bio)
 
 	blk_queue_split(q, &bio);
 
-    //printk("in blk_queue_bio\n");
+    printk("in blk_queue_bio bio->tag_flags is %u\n", bio->tag_flags);
 
 	if (!bio_integrity_prep(bio))
 		return BLK_QC_T_NONE;

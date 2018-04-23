@@ -469,6 +469,7 @@ static inline void dio_bio_submit(struct dio *dio, struct dio_submit *sdio)
             bio->proc_pid = iter->td.proc_pid;
             bio->tag_flags = iter->td.tag_flags;
         }
+        printk("before submit_bio bio->tag_flags is %u\n", bio->tag_flags);
 		dio->bio_cookie = submit_bio(bio);
     }
 
