@@ -1175,7 +1175,7 @@ static void __map_bio(struct dm_target_io *tio)
 	struct bio *clone = &tio->clone;
 	struct dm_target *ti = tio->ti;
 
-    printk("in __map_bio\n");
+    //printk("in __map_bio\n");
 	clone->bi_end_io = clone_endio;
 
 	/*
@@ -1197,7 +1197,7 @@ static void __map_bio(struct dm_target_io *tio)
 		/* the bio has been remapped so dispatch it */
 		trace_block_bio_remap(clone->bi_disk->queue, clone,
 				      bio_dev(tio->io->bio), sector);
-        printk("in DM_MAPIO_REMAPPED\n");
+        //printk("in DM_MAPIO_REMAPPED\n");
 		generic_make_request(clone);
 		break;
 	case DM_MAPIO_KILL:
@@ -1434,7 +1434,7 @@ static int __split_and_process_non_flush(struct clone_info *ci)
 	unsigned len;
 	int r;
 
-    printk("in __split_and_process_non_flush\n");
+    //printk("in __split_and_process_non_flush\n");
 	if (unlikely(bio_op(bio) == REQ_OP_DISCARD))
 		return __send_discard(ci);
 	else if (unlikely(bio_op(bio) == REQ_OP_WRITE_SAME))
