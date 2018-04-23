@@ -10,6 +10,10 @@
 #include <linux/idr.h>
 #include <linux/tagio.h>
 
+atomic_t insert_count;
+atomic_t dispatch_count;
+atomic_t real_dispatch_count;
+
 void insert_proc_into_vt_tree(struct proc_data *procd, struct vm_data *vmd)
 {
     struct rb_node **link, *parent = NULL;
@@ -99,7 +103,7 @@ static int noop_dispatch(struct request_queue *q, int force)
         }
         if (find)
             break;
-        printk("proc %u request list is empty\n", procd->proc_pid);
+        printk("proc %u request list is empty, insert c is %d, dispatch c is %d, real dispatch c is %d\n", procd->proc_pid, atomic_read(&insert_count), atomic_read(&dispatch_count), atomic_read(&real_dispatch_count));
     }
 
 
@@ -120,6 +124,7 @@ static int noop_dispatch(struct request_queue *q, int force)
 
     list_del_init(&rq->tag_list);
     rq->tagio.tag_flags = tag_ok;
+    atomic_add(1, &dispatch_count);
     //printk(KERN_ERR"after delete tag_list\n");
     
     if (!list_empty(&procd->list)) {
@@ -146,8 +151,8 @@ my_fail:
     list_for_each_entry(temp_rq, &nd->queue, queuelist) {
         if (temp_rq->tagio.tag_flags != FLAG_TAG) {
             req = temp_rq;
-            //if (req->tagio.tag_flags == tag_ok)
-              //  list_del_init(&req->tag_list);
+            if (req->tagio.tag_flags == tag_ok)
+                atomic_add(&real_dispatch_count);
             break;
         }
     }
@@ -161,8 +166,9 @@ my_fail:
 static void noop_add_request(struct request_queue *q, struct request *rq)
 {
 	struct noop_data *nd = q->elevator->elevator_data;
-    //if (rq->tagio.tag_flags == FLAG_TAG) {
-    //}
+    if (rq->tagio.tag_flags == FLAG_TAG) {
+        atomic_add(1, &insert_count);
+    }
       //  return;
     list_add_tail(&rq->queuelist, &nd->queue);
 }
@@ -323,6 +329,10 @@ static int noop_init_queue(struct request_queue *q, struct elevator_type *e)
     //spin_lock_init(&nd->vms_pid_lock);
     spin_lock_init(&nd->vms_lock);
     INIT_LIST_HEAD(&nd->vms);
+
+    atomic_set(&insert_count, 0);
+    atomic_set(&dispatch_count, 0);
+    atomic_set(&real_dispatch_count, 0);
 
 	spin_lock_irq(q->queue_lock);
 	q->elevator = eq;
