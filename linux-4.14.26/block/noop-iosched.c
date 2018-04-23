@@ -152,7 +152,7 @@ my_fail:
         if (temp_rq->tagio.tag_flags != FLAG_TAG) {
             req = temp_rq;
             if (req->tagio.tag_flags == tag_ok)
-                atomic_add(&real_dispatch_count);
+                atomic_add(1, &real_dispatch_count);
             break;
         }
     }
