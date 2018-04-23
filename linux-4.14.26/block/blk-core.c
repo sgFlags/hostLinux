@@ -2237,6 +2237,7 @@ blk_qc_t generic_make_request(struct bio *bio)
 		goto out;
 	}
 
+    printk("in generic_make_request, bio->tag is %u\n", bio->tag_flags);
 	/* following loop may be a bit non-obvious, and so deserves some
 	 * explanation.
 	 * Before entering the loop, bio->bi_next is NULL (as all callers
@@ -2260,6 +2261,8 @@ blk_qc_t generic_make_request(struct bio *bio)
 		if (likely(blk_queue_enter(q, bio->bi_opf & REQ_NOWAIT) == 0)) {
 			struct bio_list lower, same;
 
+            //printk("in if\n");
+            printk("in if blk_queue_bio bio->tag_flags is %u\n", bio->tag_flags);
 			/* Create a fresh bio_list for all subordinate requests */
 			bio_list_on_stack[1] = bio_list_on_stack[0];
 			bio_list_init(&bio_list_on_stack[0]);
@@ -2282,6 +2285,7 @@ blk_qc_t generic_make_request(struct bio *bio)
 			bio_list_merge(&bio_list_on_stack[0], &same);
 			bio_list_merge(&bio_list_on_stack[0], &bio_list_on_stack[1]);
 		} else {
+            printk("in else blk_queue_bio bio->tag_flags is %u\n", bio->tag_flags);
 			if (unlikely(!blk_queue_dying(q) &&
 					(bio->bi_opf & REQ_NOWAIT)))
 				bio_wouldblock_error(bio);
@@ -2337,7 +2341,7 @@ blk_qc_t submit_bio(struct bio *bio)
 		}
 	}
 
-    printk("before generic_make_request, bio is %u\n", bio->tag_flags);
+    //printk("before generic_make_request, bio is %u\n", bio->tag_flags);
 	return generic_make_request(bio);
 }
 EXPORT_SYMBOL(submit_bio);
