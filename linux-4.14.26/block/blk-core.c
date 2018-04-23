@@ -2218,6 +2218,11 @@ blk_qc_t generic_make_request(struct bio *bio)
 	 */
 	struct bio_list bio_list_on_stack[2];
 	blk_qc_t ret = BLK_QC_T_NONE;
+    uint8_t tag_prio = bio->tag_prio;
+    pid_t vm_pid = bio->vm_pid;
+    pid_t proc_pid = bio->proc_pid;
+    uint32_t tag_flags = bio->tag_flags;
+    bool second = false;
 
 	if (!generic_make_request_checks(bio))
 		goto out;
@@ -2237,7 +2242,7 @@ blk_qc_t generic_make_request(struct bio *bio)
 		goto out;
 	}
 
-    printk("in generic_make_request, bio->tag_flags is %u, bio->bi_max_vecs is %d, bio->bi_iter.bi_sector is %d\n", bio->tag_flags, bio->bi_max_vecs, bio->bi_iter.bi_sector);
+    //printk("in generic_make_request, bio->tag_flags is %u, bio->bi_max_vecs is %d, bio->bi_iter.bi_sector is %d\n", bio->tag_flags, bio->bi_max_vecs, bio->bi_iter.bi_sector);
     //printk("in generic_make_request, bio->tag is %u\n", bio->tag_flags);
 	/* following loop may be a bit non-obvious, and so deserves some
 	 * explanation.
@@ -2267,7 +2272,16 @@ blk_qc_t generic_make_request(struct bio *bio)
 			bio_list_on_stack[1] = bio_list_on_stack[0];
 			bio_list_init(&bio_list_on_stack[0]);
             printk("in if 2 blk_queue_bio bio->tag_flags is %u, bio->bi_max_vecs is %d, bio->bi_iter.bi_sector is %d\n", bio->tag_flags, bio->bi_max_vecs, bio->bi_iter.bi_sector);
-			ret = q->make_request_fn(q, bio);
+            if (second == true) {
+                bio->tag_flags = tag_flags;
+                bio->vm_pid = vm_pid;
+                bio->proc_pid = proc_pid;
+                bio->tag_prio = tag_prio;
+            }
+            
+            if (bio->tag_flags == FLAG_TAG)
+                second = true;
+            ret = q->make_request_fn(q, bio);
 
 			blk_queue_exit(q);
 
