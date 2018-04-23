@@ -529,6 +529,7 @@ static blk_qc_t mm_make_request(struct request_queue *q, struct bio *bio)
 		 (unsigned long long)bio->bi_iter.bi_sector,
 		 bio->bi_iter.bi_size);
 
+    printk("in mm_make_request\n");
 	blk_queue_split(q, &bio);
 
 	spin_lock_irq(&card->lock);

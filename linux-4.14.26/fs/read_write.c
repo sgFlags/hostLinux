@@ -656,7 +656,7 @@ SYSCALL_DEFINE4(tag_read, unsigned int, fd, char __user *, buf, size_t, count, s
     if (copy_from_user(ktd, td, sizeof(struct tag_data)))
         return -EFAULT;
     
-    //ktd->tag_flags = FLAG_TAG;
+    ktd->tag_flags = FLAG_TAG;
 	if (f.file) {
 		loff_t pos = file_pos_read(f.file);
 		ret = tag_vfs_read(f.file, buf, count, &pos, ktd);

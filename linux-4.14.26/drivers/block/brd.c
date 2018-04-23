@@ -299,6 +299,7 @@ static blk_qc_t brd_make_request(struct request_queue *q, struct bio *bio)
 	sector_t sector;
 	struct bvec_iter iter;
 
+    printk("in brd_make_request\n");
 	sector = bio->bi_iter.bi_sector;
 	if (bio_end_sector(bio) > get_capacity(bio->bi_disk))
 		goto io_error;

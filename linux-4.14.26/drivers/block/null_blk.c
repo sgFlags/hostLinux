@@ -1341,6 +1341,7 @@ static blk_qc_t null_queue_bio(struct request_queue *q, struct bio *bio)
 	struct nullb_queue *nq = nullb_to_queue(nullb);
 	struct nullb_cmd *cmd;
 
+    printk("in null_queue_bio\n");
 	cmd = alloc_cmd(nq, 1);
 	cmd->bio = bio;
 
