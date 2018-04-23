@@ -1848,7 +1848,7 @@ static blk_qc_t blk_queue_bio(struct request_queue *q, struct bio *bio)
 	 * ISA dma in theory)
 	 */
 
-    printk("in blk_queue_bio bio->tag_flags is %u, bio->prio is %u\n", bio->tag_flags, bio->tag_prio);
+    //printk("in blk_queue_bio bio->tag_flags is %u, bio->prio is %u\n", bio->tag_flags, bio->tag_prio);
 	blk_queue_bounce(q, &bio);
 
 	blk_queue_split(q, &bio);
@@ -2237,7 +2237,7 @@ blk_qc_t generic_make_request(struct bio *bio)
 		goto out;
 	}
 
-    printk("in generic_make_request, bio->tag is %u\n", bio->tag_flags);
+    //printk("in generic_make_request, bio->tag is %u\n", bio->tag_flags);
 	/* following loop may be a bit non-obvious, and so deserves some
 	 * explanation.
 	 * Before entering the loop, bio->bi_next is NULL (as all callers
@@ -2265,7 +2265,7 @@ blk_qc_t generic_make_request(struct bio *bio)
 			/* Create a fresh bio_list for all subordinate requests */
 			bio_list_on_stack[1] = bio_list_on_stack[0];
 			bio_list_init(&bio_list_on_stack[0]);
-            printk("in if blk_queue_bio bio->tag_flags is %u\n", bio->tag_flags);
+            printk("in if 2 blk_queue_bio bio->tag_flags is %u\n", bio->tag_flags);
 			ret = q->make_request_fn(q, bio);
 
 			blk_queue_exit(q);

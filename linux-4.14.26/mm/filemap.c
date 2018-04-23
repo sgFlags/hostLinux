@@ -1956,7 +1956,7 @@ static ssize_t generic_file_buffered_read(struct kiocb *iocb,
       //  printk("get to generic_file_buffered_read!\n");
     ra->td = iter->td;
 
-    //printk("in generic_file_buffered_read!\n");
+    printk("in generic_file_buffered_read!\n");
 
 	if (unlikely(*ppos >= inode->i_sb->s_maxbytes))
 		return 0;
