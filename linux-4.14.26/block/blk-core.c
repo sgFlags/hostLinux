@@ -1644,7 +1644,7 @@ bool bio_attempt_back_merge(struct request_queue *q, struct request *req,
     req->tagio.proc_pid = bio->proc_pid;
     if (bio->tag_flags == FLAG_TAG || req->tagio.tag_flags == FLAG_TAG)
         req->tagio.tag_flags = bio->tag_flags;
-    printk("in back merge, request->tag_flags is %d\n", req->tagio.tag_flags);
+  //  printk("in back merge, request->tag_flags is %d\n", req->tagio.tag_flags);
 	blk_account_io_start(req, false);
 	return true;
 }
@@ -1677,7 +1677,7 @@ bool bio_attempt_front_merge(struct request_queue *q, struct request *req,
 
     if (bio->tag_flags == FLAG_TAG || req->tagio.tag_flags == FLAG_TAG)
         req->tagio.tag_flags = bio->tag_flags;
-    printk("in front merge, request->tag_flags is %d\n", req->tagio.tag_flags);
+//    printk("in front merge, request->tag_flags is %d\n", req->tagio.tag_flags);
     //printk("infront merge, request->tag_prio is %d\n", req->tag_prio);
 	blk_account_io_start(req, false);
 	return true;
