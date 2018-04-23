@@ -2271,7 +2271,7 @@ blk_qc_t generic_make_request(struct bio *bio)
 			/* Create a fresh bio_list for all subordinate requests */
 			bio_list_on_stack[1] = bio_list_on_stack[0];
 			bio_list_init(&bio_list_on_stack[0]);
-            printk("in if 2 blk_queue_bio bio->tag_flags is %u, bio->bi_max_vecs is %d, bio->bi_iter.bi_sector is %d\n", bio->tag_flags, bio->bi_max_vecs, bio->bi_iter.bi_sector);
+            //printk("in if 2 blk_queue_bio bio->tag_flags is %u, bio->bi_max_vecs is %d, bio->bi_iter.bi_sector is %d\n", bio->tag_flags, bio->bi_max_vecs, bio->bi_iter.bi_sector);
             /*if (second == true) {
                 bio->tag_flags = tag_flags;
                 bio->vm_pid = vm_pid;

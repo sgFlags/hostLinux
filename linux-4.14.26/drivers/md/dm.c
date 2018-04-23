@@ -1197,7 +1197,7 @@ static void __map_bio(struct dm_target_io *tio)
 		/* the bio has been remapped so dispatch it */
 		trace_block_bio_remap(clone->bi_disk->queue, clone,
 				      bio_dev(tio->io->bio), sector);
-        printk("in DM_MAPIO_REMAPPED\n");
+        //printk("in DM_MAPIO_REMAPPED\n");
 		generic_make_request(clone);
 		break;
 	case DM_MAPIO_KILL:
@@ -1434,7 +1434,7 @@ static int __split_and_process_non_flush(struct clone_info *ci)
 	unsigned len;
 	int r;
 
-    printk("in __split_and_process_non_flush\n");
+    //printk("in __split_and_process_non_flush\n");
 	if (unlikely(bio_op(bio) == REQ_OP_DISCARD))
 		return __send_discard(ci);
 	else if (unlikely(bio_op(bio) == REQ_OP_WRITE_SAME))
@@ -1489,13 +1489,13 @@ static void __split_and_process_bio(struct mapped_device *md,
 	start_io_acct(ci.io);
 
 	if (bio->bi_opf & REQ_PREFLUSH) {
-		printk("req flush\n");
+		//printk("req flush\n");
         ci.bio = &ci.md->flush_bio;
 		ci.sector_count = 0;
 		error = __send_empty_flush(&ci);
 		/* dec_pending submits any data associated with flush */
 	} else if (bio_op(bio) == REQ_OP_ZONE_RESET) {
-        printk("req_op_zone_reset\n");
+        //printk("req_op_zone_reset\n");
 		ci.bio = bio;
 		ci.sector_count = 0;
 		error = __split_and_process_non_flush(&ci);
@@ -1524,7 +1524,7 @@ static blk_qc_t dm_make_request(struct request_queue *q, struct bio *bio)
 	int srcu_idx;
 	struct dm_table *map;
 
-    printk("in dm_make_request\n");
+    //printk("in dm_make_request\n");
 	map = dm_get_live_table(md, &srcu_idx);
 
 	generic_start_io_acct(q, rw, bio_sectors(bio), &dm_disk(md)->part0);
