@@ -87,7 +87,7 @@ static int noop_dispatch(struct request_queue *q, int force)
             //printk("strange!!\n");
             //goto my_fail;
             rq = list_last_entry(&procd->request_list, struct request, tag_list);
-            printk("process %u is found, procvt is %llu, prio is %u\n", procd->proc_pid, procd->proc_disktime, rq->tag_prio);
+            printk("process %u req %d is found, procvt is %llu, prio is %u\n", procd->proc_pid, atomic_read(&rq->tag_num), procd->proc_disktime, rq->tag_prio);
             find = true;
             break;
         }
@@ -114,7 +114,6 @@ static int noop_dispatch(struct request_queue *q, int force)
         //printk(KERN_ERR"rq is null??\n");
         goto my_fail;
     }
-    printk("proc %u is going to be dispatched! proctime is %llu, prio is %u\n\n", procd->proc_pid, procd->proc_disktime, rq->tag_prio);
 
     stride = GLOBAL_S / rq->tag_prio;
 
@@ -126,6 +125,8 @@ static int noop_dispatch(struct request_queue *q, int force)
     list_del_init(&rq->tag_list);
     rq->tagio.tag_flags = tag_ok;
     atomic_add(1, &dispatch_count);
+    printk("proc %u req %d is going to be dispatched! proctime is %llu, prio is %u ", procd->proc_pid, atomic_read(&rq->tag_num), procd->proc_disktime, rq->tag_prio);
+    printk("dispatch count is %d\n", atomic_read(&dispatch_count));
     //printk(KERN_ERR"after delete tag_list\n");
     
     if (!list_empty(&procd->list)) {
@@ -152,12 +153,13 @@ my_fail:
     list_for_each_entry(temp_rq, &nd->queue, queuelist) {
         if (temp_rq->tagio.tag_flags != FLAG_TAG) {
             req = temp_rq;
-            if (req->tagio.tag_flags == tag_ok)
+            if (req->tagio.tag_flags == tag_ok) {
                 atomic_add(1, &real_dispatch_count);
+                printk("dispatch a real request %d, real dispatch count is %d\n\n", atomic_read(&rq->tag_num), atomic_read(&real_dispatch_count));
             break;
         } else
         if (temp_rq->tagio.tag_flags == FLAG_TAG) {
-            printk("still...\n");
+            printk("rq %d of proc %u is still...\n", atomic_read(&temp_rq->tag_num), temp_rq->procdata->proc_pid);
         }
     }
 	if (req) {
@@ -172,6 +174,7 @@ static void noop_add_request(struct request_queue *q, struct request *rq)
 	struct noop_data *nd = q->elevator->elevator_data;
     if (rq->tagio.tag_flags == FLAG_TAG) {
         atomic_add(1, &insert_count);
+        printk("insert request %d into request_queue, insert_count is %d\n", atomic_read(&rq->tag_num), atomic_read(&insert_count));
     }
       //  return;
     list_add_tail(&rq->queuelist, &nd->queue);
@@ -305,6 +308,8 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     }
     list_add(&rq->tag_list, &procd->request_list);
     atomic_add(1, &set_insert_count);
+    atomic_set(atomic_read(&set_insert_count), &rq->tag_num);
+    printk("in setting, insert rq %d into proc %u\n", atomic_read(&rq->tag_num), procd->proc_pid); 
     spin_unlock_irq(q->queue_lock);
     return 0;
 }

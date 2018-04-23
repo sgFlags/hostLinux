@@ -213,6 +213,7 @@ struct request {
     } tagio;
     struct list_head tag_list;
     uint8_t tag_prio;
+    atomic_t tag_num;
 
 
 	struct gendisk *rq_disk;
