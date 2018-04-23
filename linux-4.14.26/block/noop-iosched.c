@@ -156,6 +156,7 @@ my_fail:
             if (req->tagio.tag_flags == tag_ok) {
                 atomic_add(1, &real_dispatch_count);
                 printk("dispatch a real request %d, real dispatch count is %d\n\n", atomic_read(&rq->tag_num), atomic_read(&real_dispatch_count));
+            }
             break;
         } else
         if (temp_rq->tagio.tag_flags == FLAG_TAG) {
