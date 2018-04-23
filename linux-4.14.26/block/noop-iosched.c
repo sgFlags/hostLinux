@@ -82,7 +82,7 @@ static int noop_dispatch(struct request_queue *q, int force)
             //printk("strange!!\n");
             //goto my_fail;
             rq = list_last_entry(&procd->request_list, struct request, tag_list);
-            printk(KERN_ERR"process %u is found, procvt is %llu, prio is %u\n", procd->proc_pid, procd->proc_disktime, rq->tag_prio);
+            printk("process %u is found, procvt is %llu, prio is %u\n", procd->proc_pid, procd->proc_disktime, rq->tag_prio);
             find = true;
             break;
         }
@@ -211,7 +211,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     rq->tagio.vm_pid = bio->vm_pid;
     rq->tagio.proc_pid = bio->proc_pid;
     rq->tagio.tag_flags = bio->tag_flags;
-    printk(KERN_ERR "request enter noop set, prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tagio.tag_flags);
+    //printk(KERN_ERR "request enter noop set, prio is %u, pid is %u, vm_pid is %u, tag_flags is %u\n", rq->tag_prio, rq->tagio.proc_pid, rq->tagio.vm_pid, rq->tagio.tag_flags);
 
     if (!backup_vmd)
         printk(KERN_ERR "out of memory\n");
