@@ -467,7 +467,7 @@ static inline void dio_bio_submit(struct dio *dio, struct dio_submit *sdio)
             bio->tag_prio = iter->td.prio;
             bio->vm_pid = iter->td.vm_pid;
             bio->proc_pid = iter->td.proc_pid;
-            bio->proc_pid = iter->td.tag_flags;
+            bio->tag_flags = iter->td.tag_flags;
         }
 		dio->bio_cookie = submit_bio(bio);
     }
