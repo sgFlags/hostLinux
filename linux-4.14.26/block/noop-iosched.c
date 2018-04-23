@@ -125,8 +125,8 @@ static int noop_dispatch(struct request_queue *q, int force)
     list_del_init(&rq->tag_list);
     rq->tagio.tag_flags = tag_ok;
     atomic_add(1, &dispatch_count);
-    printk("proc %u req %d is going to be dispatched! proctime is %llu, prio is %u ", procd->proc_pid, atomic_read(&rq->tag_num), procd->proc_disktime, rq->tag_prio);
-    printk("dispatch count is %d\n", atomic_read(&dispatch_count));
+    printk("proc %u req %d is going to be dispatched! proctime is %llu, prio is %u, dispatch count is %d\n", procd->proc_pid, atomic_read(&rq->tag_num), procd->proc_disktime, rq->tag_prio, atomic_read(&dispatch_count));
+    //printk("dispatch count is %d\n", atomic_read(&dispatch_count));
     //printk(KERN_ERR"after delete tag_list\n");
     
     if (!list_empty(&procd->list)) {
