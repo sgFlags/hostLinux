@@ -2262,10 +2262,10 @@ blk_qc_t generic_make_request(struct bio *bio)
 			struct bio_list lower, same;
 
             //printk("in if\n");
-            printk("in if blk_queue_bio bio->tag_flags is %u\n", bio->tag_flags);
 			/* Create a fresh bio_list for all subordinate requests */
 			bio_list_on_stack[1] = bio_list_on_stack[0];
 			bio_list_init(&bio_list_on_stack[0]);
+            printk("in if blk_queue_bio bio->tag_flags is %u\n", bio->tag_flags);
 			ret = q->make_request_fn(q, bio);
 
 			blk_queue_exit(q);
