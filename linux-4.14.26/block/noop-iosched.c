@@ -309,7 +309,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
     }
     list_add(&rq->tag_list, &procd->request_list);
     atomic_add(1, &set_insert_count);
-    atomic_set(atomic_read(&set_insert_count), &rq->tag_num);
+    atomic_set(&rq->tag_num, atomic_read(&set_insert_count));
     printk("in setting, insert rq %d into proc %u\n", atomic_read(&rq->tag_num), procd->proc_pid); 
     spin_unlock_irq(q->queue_lock);
     return 0;
