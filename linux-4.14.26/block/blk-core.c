@@ -1847,11 +1847,12 @@ static blk_qc_t blk_queue_bio(struct request_queue *q, struct bio *bio)
 	 * certain limit bounced to low memory (ie for highmem, or even
 	 * ISA dma in theory)
 	 */
+
+    printk("in blk_queue_bio bio->tag_flags is %u, bio->prio is %u\n", bio->tag_flags, bio->tag_prio);
 	blk_queue_bounce(q, &bio);
 
 	blk_queue_split(q, &bio);
 
-    printk("in blk_queue_bio bio->tag_flags is %u\n", bio->tag_flags);
 
 	if (!bio_integrity_prep(bio))
 		return BLK_QC_T_NONE;
@@ -2336,6 +2337,7 @@ blk_qc_t submit_bio(struct bio *bio)
 		}
 	}
 
+    printk("before generic_make_request, bio is %u\n", bio->tag_flags);
 	return generic_make_request(bio);
 }
 EXPORT_SYMBOL(submit_bio);
