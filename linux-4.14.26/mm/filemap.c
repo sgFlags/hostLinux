@@ -2219,7 +2219,7 @@ generic_file_read_iter(struct kiocb *iocb, struct iov_iter *iter)
 		struct inode *inode = mapping->host;
 		loff_t size;
 
-        printk("in direct read! prio is %u\n", iter->td.prio);
+        //printk("in direct read! prio is %u\n", iter->td.prio);
 		size = i_size_read(inode);
 		if (iocb->ki_flags & IOCB_NOWAIT) {
 			if (filemap_range_has_page(mapping, iocb->ki_pos,

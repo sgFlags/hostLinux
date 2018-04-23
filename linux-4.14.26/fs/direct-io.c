@@ -449,9 +449,9 @@ static inline void dio_bio_submit(struct dio *dio, struct dio_submit *sdio)
 	dio->refcount++;
 	spin_unlock_irqrestore(&dio->bio_lock, flags);
 
-    //if (iter) {
-        //printk("iter exists! prio is %d\n", iter->td.prio);
-    //}
+    if (iter) {
+        printk("iter exists! prio is %d, vm_pid is %u, proc_pid is %u, tag_flags is %u\n", iter->td.prio, iter->td.vm_pid, iter->td.proc_pid, iter->td.tag_flags);
+    }
 
 	if (dio->is_async && dio->op == REQ_OP_READ && dio->should_dirty)
 		bio_set_pages_dirty(bio);
@@ -459,6 +459,7 @@ static inline void dio_bio_submit(struct dio *dio, struct dio_submit *sdio)
 	dio->bio_disk = bio->bi_disk;
 
 	if (sdio->submit_io) {
+        printk("in own submit_io\n");
 		sdio->submit_io(bio, dio->inode, sdio->logical_offset_in_bio);
 		dio->bio_cookie = BLK_QC_T_NONE;
 	} else
@@ -1342,7 +1343,7 @@ do_blockdev_direct_IO(struct kiocb *iocb, struct inode *inode,
 		sdio.cur_page = NULL;
 	}
 	if (sdio.bio) {
-        printk("enter dio_bio_submit\n");
+        //printk("enter dio_bio_submit\n");
 		dio_bio_submit(dio, &sdio);
     }
 
