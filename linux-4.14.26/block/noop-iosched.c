@@ -10,6 +10,7 @@
 #include <linux/idr.h>
 #include <linux/tagio.h>
 
+atomic_t set_insert_count;
 atomic_t insert_count;
 atomic_t dispatch_count;
 atomic_t real_dispatch_count;
@@ -113,7 +114,7 @@ static int noop_dispatch(struct request_queue *q, int force)
         //printk(KERN_ERR"rq is null??\n");
         goto my_fail;
     }
-    printk("proc %u is going to be dispatched! proctime is %llu, prio is %u\n", procd->proc_pid, procd->proc_disktime, rq->tag_prio);
+    printk("proc %u is going to be dispatched! proctime is %llu, prio is %u\n\n", procd->proc_pid, procd->proc_disktime, rq->tag_prio);
 
     stride = GLOBAL_S / rq->tag_prio;
 
@@ -154,6 +155,9 @@ my_fail:
             if (req->tagio.tag_flags == tag_ok)
                 atomic_add(1, &real_dispatch_count);
             break;
+        } else
+        if (temp_rq->tagio.tag_flags == FLAG_TAG) {
+            printk("still...\n");
         }
     }
 	if (req) {
@@ -300,6 +304,7 @@ static int noop_set_request(struct request_queue *q, struct request *rq, struct 
         kfree(backup_procd);
     }
     list_add(&rq->tag_list, &procd->request_list);
+    atomic_add(1, &set_insert_count);
     spin_unlock_irq(q->queue_lock);
     return 0;
 }
@@ -333,6 +338,7 @@ static int noop_init_queue(struct request_queue *q, struct elevator_type *e)
     atomic_set(&insert_count, 0);
     atomic_set(&dispatch_count, 0);
     atomic_set(&real_dispatch_count, 0);
+    atomic_set(&set_insert_count, 0);
 
 	spin_lock_irq(q->queue_lock);
 	q->elevator = eq;
