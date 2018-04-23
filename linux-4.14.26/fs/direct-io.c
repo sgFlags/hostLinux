@@ -462,8 +462,15 @@ static inline void dio_bio_submit(struct dio *dio, struct dio_submit *sdio)
         printk("in own submit_io\n");
 		sdio->submit_io(bio, dio->inode, sdio->logical_offset_in_bio);
 		dio->bio_cookie = BLK_QC_T_NONE;
-	} else
+	} else {
+        if (iter) {
+            bio->tag_prio = iter->td.prio;
+            bio->vm_pid = iter->td.vm_pid;
+            bio->proc_pid = iter->td.proc_pid;
+            bio->proc_pid = iter->td.tag_flags;
+        }
 		dio->bio_cookie = submit_bio(bio);
+    }
 
 	sdio->bio = NULL;
 	sdio->boundary = 0;
