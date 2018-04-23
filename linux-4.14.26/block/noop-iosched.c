@@ -159,7 +159,7 @@ my_fail:
             break;
         } else
         if (temp_rq->tagio.tag_flags == FLAG_TAG) {
-            printk("rq %d of proc %u is still...\n", atomic_read(&temp_rq->tag_num), temp_rq->procdata->proc_pid);
+            printk("rq %d of proc %u is still...\n", atomic_read(&temp_rq->tag_num), temp_rq->tagio.procdata->proc_pid);
         }
     }
 	if (req) {
