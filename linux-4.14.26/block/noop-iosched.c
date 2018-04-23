@@ -158,7 +158,7 @@ my_fail:
                 printk("dispatch a real request %d, real dispatch count is %d\n\n", atomic_read(&req->tag_num), atomic_read(&real_dispatch_count));
             }
             break;
-        } else
+        } 
         if (temp_rq->tagio.tag_flags == FLAG_TAG) {
             printk("rq %d of proc %u is still...\n", atomic_read(&temp_rq->tag_num), temp_rq->tagio.procdata->proc_pid);
         }
